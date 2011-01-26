@@ -7,7 +7,7 @@
  * @license  http://www.fsf.org/copyleft/gpl.html GPL
  * @package  Hermes
  */
-class Hermes_Injector_Factory_Driver
+class Hermes_Factory_Driver
 {
     /**
      *
