@@ -22,7 +22,7 @@
   <email>mrubinsk@horde.org</email>
   <active>yes</active>
  </lead>
- <date>2017-10-13</date>
+ <date>2017-10-16</date>
  <version>
   <release>2.0.0</release>
   <api>2.0.0</api>
@@ -247,7 +247,7 @@
    <file name="index.php" role="horde" />
    <file name="invoicing.php" role="horde" />
    <file name="LICENSE" role="doc" />
-   <file name="README" role="doc" />
+   <file name="README.rst" role="doc" />
    <file name="search.php" role="horde" />
    <file name="start.php" role="horde" />
    <file name="time.php" role="horde" />
@@ -396,7 +396,7 @@
    <install as="hermes/index.php" name="index.php" />
    <install as="hermes/invoicing.php" name="invoicing.php" />
    <install as="LICENSE" name="LICENSE" />
-   <install as="README" name="README" />
+   <install as="README.rst" name="README.rst" />
    <install as="hermes/search.php" name="search.php" />
    <install as="hermes/start.php" name="start.php" />
    <install as="hermes/time.php" name="time.php" />
