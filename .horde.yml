@@ -9,3 +9,58 @@ description: >
   invoice interface.
 list: horde
 type: application
+homepage: https://www.horde.org/apps/hermes
+authors:
+  -
+    name: Chuck Hagenbuch
+    user: chuck
+    email: chuck@horde.org
+    active: true
+    role: lead
+  -
+    name: Jan Schneider
+    user: jan
+    email: jan@horde.org
+    active: true
+    role: lead
+  -
+    name: Michael J Rubinsky
+    user: mrubinsk
+    email: mrubinsk@horde.org
+    active: true
+    role: lead
+version:
+  release: 2.0.0
+  api: 2.0.0
+state:
+  release: alpha
+  api: alpha
+license:
+  identifier: BSD-2-Clause
+  uri: http://www.horde.org/licenses/bsdl.php
+dependencies:
+  required:
+    php: ^5.3 || ^7
+    pear:
+      pear.horde.org/horde: ^5
+      pear.horde.org/Horde_Auth: ^2
+      pear.horde.org/Horde_Autoloader: ^2
+      pear.horde.org/Horde_Core: ^2.30
+      pear.horde.org/Horde_Data: ^2
+      pear.horde.org/Horde_Date: ^2
+      pear.horde.org/Horde_Db: ^2
+      pear.horde.org/Horde_Exception: ^2
+      pear.horde.org/Horde_Form: ^2
+      pear.horde.org/Horde_Nls: ^2
+      pear.horde.org/Horde_Notification: ^2
+      pear.horde.org/Horde_Perms: ^2
+      pear.horde.org/Horde_Url: ^2
+      pear.horde.org/Horde_Util: ^2
+    ext:
+      gettext: '*'
+      json: '*'
+      SimpleXML: '*'
+  optional:
+    pear:
+      pear.horde.org/nag: ^4
+      pear.horde.org/turba: ^4
