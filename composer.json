@@ -22,7 +22,7 @@
         }
     ],
     "version": "2.0.0",
-    "time": "2016-01-13",
+    "time": "2017-10-17",
     "repositories": [
         {
             "type": "pear",
@@ -30,11 +30,11 @@
         }
     ],
     "require": {
-        "php": "^5.3",
+        "php": "^5.3 || ^7",
         "pear-pear.horde.org/horde": "^5",
         "pear-pear.horde.org/Horde_Auth": "^2",
         "pear-pear.horde.org/Horde_Autoloader": "^2",
-        "pear-pear.horde.org/Horde_Core": "^2.23",
+        "pear-pear.horde.org/Horde_Core": "^2.30",
         "pear-pear.horde.org/Horde_Data": "^2",
         "pear-pear.horde.org/Horde_Date": "^2",
         "pear-pear.horde.org/Horde_Db": "^2",
@@ -52,5 +52,14 @@
     "suggest": {
         "pear-pear.horde.org/nag": "^4",
         "pear-pear.horde.org/turba": "^4"
+    },
+    "replace": {
+        "pear-pear.horde.org/hermes": "2.*",
+        "pear-horde/hermes": "2.*"
+    },
+    "autoload": {
+        "psr-0": {
+            "Hermes": "lib/"
+        }
     }
 }
