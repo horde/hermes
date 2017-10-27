@@ -1,6 +1,6 @@
---------
-v2.0-git
---------
+----------
+v2.0.0-git
+----------
 
 [jan] Officially support PHP 7.
 [jan] Show users' full names in employee lists.
@@ -44,15 +44,16 @@ v1.0
 v1.0-RC1
 --------
 
-[jan] Add start and end time of stop watch to entry description (Request #5585).
+[jan] Add start and end time of stop watch to entry description (Request
+      #5585).
 [jan] Update time budget of cost objects after saving an entry.
 [bak] Add OS X widget for entering time
 [jan] Allow to mark job types billable (Vinay Kumar <vinay.kumar@ejyothi.com>,
       Request #5207).
 [jan] Add configuration to only include billable time when summing up for
       deliverables.
-[cjh] Add an initial interface for sending invoice data to Minerva
-      (Duck <duck@obala.net).
+[cjh] Add an initial interface for sending invoice data to Minerva (Duck
+      <duck@obala.net).
 [jan] Add hourly rates to job types (Duck <duck@obala.net>).
 [jan] Drop incomplete invoicing support.
 [jan] Add configuration for address book field used for the client listings.
@@ -62,10 +63,10 @@ v1.0-RC1
 [jan] Add subtotal tabs to the overview page.
 [jan] Save used stop watch name in "Notes" field (tevans@tachometry.com,
       Request #2667).
-[cjh] Add subtotal tabs to the time search form
-      (tevans@tachometry.com, Bug #2632).
-[cjh] Add cost object filtering to the time search page
-      (tevans@tachometry.com, Bug #2631).
+[cjh] Add subtotal tabs to the time search form (tevans@tachometry.com, Bug
+      #2632).
+[cjh] Add cost object filtering to the time search page (tevans@tachometry.com,
+      Bug #2631).
 [cjh] Print button for timesheets, and support for only showing some timesheet
       elements when printing (Bug #2375).
 [jmf] Replace support tracking time to deliverables with support for tracking
@@ -73,11 +74,11 @@ v1.0-RC1
       applications.  Deliverables are now a type of cost object.
 [jan] Add stop watch to sidebar.
 [cjh] Use bind variables in SQL driver (selsky@columbia.edu, #1745).
-[cjh] Use client name instead of id in exports, and allow searching on
-      whether or not time is billable (Tom Evans <tevans@tachometry.com>).
+[cjh] Use client name instead of id in exports, and allow searching on whether
+      or not time is billable (Tom Evans <tevans@tachometry.com>).
 [jmf] Add ability to track time to deliverables, maintain deliverables.
-[jmf] Add ability to disable job types so they still exist but can no longer
-      be used for time entry (but can be used for searching and display).
+[jmf] Add ability to disable job types so they still exist but can no longer be
+      used for time entry (but can be used for searching and display).
 [jan] Add Spanish translation (Manuel Perez Ayala <mperaya@alcazaba.unex.es>).
 [jmf] Merge submit screen into time entry screen.
 [jmf] Make time entry form "float".
