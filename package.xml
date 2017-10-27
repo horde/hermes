@@ -41,6 +41,7 @@
 * [mjr] Implement exclusive timers (Request #12543).
 * [mjr] Add ability to optionally add client, cost object, or job type to timer on creation.
 * [mjr] Add listTimeObjects support.
+* [mjr] Redesigned UI.
 * [jan] Fix listing per-client cost objects in search form.
 * [jan] Add Latvian translation (Jānis Eisaks &lt;jancs@dv.lv&gt;).
 * [mjr] Allow pausing and restarting timers.
@@ -526,6 +527,7 @@
 * [mjr] Implement exclusive timers (Request #12543).
 * [mjr] Add ability to optionally add client, cost object, or job type to timer on creation.
 * [mjr] Add listTimeObjects support.
+* [mjr] Redesigned UI.
 * [jan] Fix listing per-client cost objects in search form.
 * [jan] Add Latvian translation (Jānis Eisaks &lt;jancs@dv.lv&gt;).
 * [mjr] Allow pausing and restarting timers.
