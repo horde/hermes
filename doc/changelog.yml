@@ -4,7 +4,7 @@
   state:
     release: alpha
     api: alpha
-  date: false
+  date:
   license:
     identifier: BSD-2-Clause
     uri: http://www.horde.org/licenses/bsdl.php
