@@ -1,8 +1,8 @@
 {
     "name": "horde/hermes",
-    "description": "A web based time tracker",
-    "type": "library",
-    "homepage": "https://pear.horde.org",
+    "description": "Time tracking application",
+    "type": "project",
+    "homepage": "https://www.horde.org/apps/hermes",
     "license": "BSD-2-Clause",
     "authors": [
         {
@@ -22,7 +22,7 @@
         }
     ],
     "version": "2.0.0",
-    "time": "2017-10-17",
+    "time": "2017-11-11",
     "repositories": [
         {
             "type": "pear",

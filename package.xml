@@ -2,7 +2,7 @@
 <package packagerversion="1.9.2" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/tasks-1.0.xsd http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
  <name>hermes</name>
  <channel>pear.horde.org</channel>
- <summary>A web based time tracker</summary>
+ <summary>Time tracking application</summary>
  <description>Hermes is the Horde time-tracking application. It ties into address books (to retrieve clients) and task lists, bug trackers etc. (to retrieve cost objects). It comes with timers, search and reporting capabilities, and an invoice interface.</description>
  <lead>
   <name>Chuck Hagenbuch</name>
@@ -22,7 +22,7 @@
   <email>mrubinsk@horde.org</email>
   <active>yes</active>
  </lead>
- <date>2017-10-17</date>
+ <date>2017-11-11</date>
  <version>
   <release>2.0.0</release>
   <api>2.0.0</api>
