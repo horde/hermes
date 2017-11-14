@@ -1,13 +1,13 @@
 {
     "name": "horde/hermes",
-    "description": "A web based time tracker",
-    "type": "library",
-    "homepage": "https://pear.horde.org",
+    "description": "Time tracking application",
+    "type": "project",
+    "homepage": "https://www.horde.org/apps/hermes",
     "license": "BSD-2-Clause",
     "authors": [
         {
-            "name": "Chuck Hagenbuch",
-            "email": "chuck@horde.org",
+            "name": "Michael J Rubinsky",
+            "email": "mrubinsk@horde.org",
             "role": "lead"
         },
         {
@@ -16,13 +16,13 @@
             "role": "lead"
         },
         {
-            "name": "Michael J Rubinsky",
-            "email": "mrubinsk@horde.org",
+            "name": "Chuck Hagenbuch",
+            "email": "chuck@horde.org",
             "role": "lead"
         }
     ],
     "version": "2.0.0",
-    "time": "2016-01-13",
+    "time": "2017-11-14",
     "repositories": [
         {
             "type": "pear",
