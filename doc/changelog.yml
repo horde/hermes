@@ -4,11 +4,12 @@
   state:
     release: alpha
     api: alpha
-  date:
+  date: ~
   license:
     identifier: BSD-2-Clause
     uri: http://www.horde.org/licenses/bsdl.php
   notes: |
+    [jan] Fix deprecation warnings about each() with PHP 7.2+.
     [jan] Officially support PHP 7.
     [jan] Show users' full names in employee lists.
     [jan] Add indexes to searchable timeslice columns.

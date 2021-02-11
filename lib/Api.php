@@ -327,7 +327,10 @@ class Hermes_Api extends Horde_Registry_Api
             $elts = array();
             $stack = empty($levels[-1]) ? array() : array(-1);
             while (count($stack)) {
-                if (!(list($key, $val) = each($levels[$stack[count($stack) - 1]]))) {
+                $val = current($levels[$stack[count($stack) - 1]]);
+                $key = key($levels[$stack[count($stack) - 1]]);
+                next($levels[$stack[count($stack) - 1]]);
+                if (!$val) {
                     array_pop($stack);
                     continue;
                 }
