@@ -1,13 +1,13 @@
 {
     "name": "horde/hermes",
     "description": "Time tracking application",
-    "type": "project",
+    "type": "horde-application",
     "homepage": "https://www.horde.org/apps/hermes",
     "license": "BSD-2-Clause",
     "authors": [
         {
-            "name": "Chuck Hagenbuch",
-            "email": "chuck@horde.org",
+            "name": "Michael J Rubinsky",
+            "email": "mrubinsk@horde.org",
             "role": "lead"
         },
         {
@@ -16,50 +16,49 @@
             "role": "lead"
         },
         {
-            "name": "Michael J Rubinsky",
-            "email": "mrubinsk@horde.org",
+            "name": "Chuck Hagenbuch",
+            "email": "chuck@horde.org",
             "role": "lead"
         }
     ],
-    "version": "2.0.0",
-    "time": "2017-11-11",
+    "time": "2021-03-21",
     "repositories": [
         {
-            "type": "pear",
-            "url": "https://pear.horde.org"
+            "type": "composer",
+            "url": "https://horde-satis.maintaina.com/"
         }
     ],
     "require": {
-        "php": "^5.3 || ^7",
-        "pear-pear.horde.org/horde": "^5",
-        "pear-pear.horde.org/Horde_Auth": "^2",
-        "pear-pear.horde.org/Horde_Autoloader": "^2",
-        "pear-pear.horde.org/Horde_Core": "^2.30",
-        "pear-pear.horde.org/Horde_Data": "^2",
-        "pear-pear.horde.org/Horde_Date": "^2",
-        "pear-pear.horde.org/Horde_Db": "^2",
-        "pear-pear.horde.org/Horde_Exception": "^2",
-        "pear-pear.horde.org/Horde_Form": "^2",
-        "pear-pear.horde.org/Horde_Nls": "^2",
-        "pear-pear.horde.org/Horde_Notification": "^2",
-        "pear-pear.horde.org/Horde_Perms": "^2",
-        "pear-pear.horde.org/Horde_Url": "^2",
-        "pear-pear.horde.org/Horde_Util": "^2",
+        "horde/horde-installer-plugin": "*",
+        "php": "^7",
+        "horde/horde": "^6",
+        "horde/auth": "^3",
+        "horde/autoloader": "^3",
+        "horde/core": "^3",
+        "horde/data": "^3",
+        "horde/date": "^3",
+        "horde/db": "^3",
+        "horde/exception": "^3",
+        "horde/form": "^3",
+        "horde/nls": "^3",
+        "horde/notification": "^3",
+        "horde/perms": "^3",
+        "horde/url": "^3",
+        "horde/util": "^3",
         "ext-gettext": "*",
         "ext-json": "*",
         "ext-SimpleXML": "*"
     },
     "suggest": {
-        "pear-pear.horde.org/nag": "^4",
-        "pear-pear.horde.org/turba": "^4"
-    },
-    "replace": {
-        "pear-pear.horde.org/hermes": "2.*",
-        "pear-horde/hermes": "2.*"
+        "horde/nag": "^5",
+        "horde/turba": "^5"
     },
     "autoload": {
         "psr-0": {
             "Hermes": "lib/"
         }
-    }
+    },
+    "bin": [
+        "bin/hermes-purge"
+    ]
 }

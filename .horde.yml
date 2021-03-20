@@ -30,8 +30,8 @@ authors:
     active: false
     role: lead
 version:
-  release: 2.0.0
-  api: 2.0.0
+  release: 3.0.0alpha1
+  api: 3.0.0
 state:
   release: alpha
   api: alpha
@@ -40,27 +40,27 @@ license:
   uri: http://www.horde.org/licenses/bsdl.php
 dependencies:
   required:
-    php: ^5.3 || ^7
-    pear:
-      pear.horde.org/horde: ^5
-      pear.horde.org/Horde_Auth: ^2
-      pear.horde.org/Horde_Autoloader: ^2
-      pear.horde.org/Horde_Core: ^2.30
-      pear.horde.org/Horde_Data: ^2
-      pear.horde.org/Horde_Date: ^2
-      pear.horde.org/Horde_Db: ^2
-      pear.horde.org/Horde_Exception: ^2
-      pear.horde.org/Horde_Form: ^2
-      pear.horde.org/Horde_Nls: ^2
-      pear.horde.org/Horde_Notification: ^2
-      pear.horde.org/Horde_Perms: ^2
-      pear.horde.org/Horde_Url: ^2
-      pear.horde.org/Horde_Util: ^2
+    php: ^7
+    composer:
+      horde/horde: ^6
+      horde/auth: ^3
+      horde/autoloader: ^3
+      horde/core: ^3
+      horde/data: ^3
+      horde/date: ^3
+      horde/db: ^3
+      horde/exception: ^3
+      horde/form: ^3
+      horde/nls: ^3
+      horde/notification: ^3
+      horde/perms: ^3
+      horde/url: ^3
+      horde/util: ^3
     ext:
       gettext: '*'
       json: '*'
       SimpleXML: '*'
   optional:
-    pear:
-      pear.horde.org/nag: ^4
-      pear.horde.org/turba: ^4
+    composer:
+      horde/nag: ^5
+      horde/turba: ^5
