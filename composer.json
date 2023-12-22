@@ -24,38 +24,32 @@
     "version": "2.0.0",
     "time": "2017-11-11",
     "repositories": [
-        {
-            "type": "pear",
-            "url": "https://pear.horde.org"
-        }
     ],
     "require": {
         "php": "^5.3 || ^7",
-        "pear-pear.horde.org/horde": "^5",
-        "pear-pear.horde.org/Horde_Auth": "^2",
-        "pear-pear.horde.org/Horde_Autoloader": "^2",
-        "pear-pear.horde.org/Horde_Core": "^2.30",
-        "pear-pear.horde.org/Horde_Data": "^2",
-        "pear-pear.horde.org/Horde_Date": "^2",
-        "pear-pear.horde.org/Horde_Db": "^2",
-        "pear-pear.horde.org/Horde_Exception": "^2",
-        "pear-pear.horde.org/Horde_Form": "^2",
-        "pear-pear.horde.org/Horde_Nls": "^2",
-        "pear-pear.horde.org/Horde_Notification": "^2",
-        "pear-pear.horde.org/Horde_Perms": "^2",
-        "pear-pear.horde.org/Horde_Url": "^2",
-        "pear-pear.horde.org/Horde_Util": "^2",
+        "horde/horde": "^5",
+        "horde/auth": "^2",
+        "horde/autoloader": "^2",
+        "horde/core": "^2.30",
+        "horde/data": "^2",
+        "horde/date": "^2",
+        "horde/db": "^2",
+        "horde/exception": "^2",
+        "horde/form": "^2",
+        "horde/nls": "^2",
+        "horde/notification": "^2",
+        "horde/perms": "^2",
+        "horde/url": "^2",
+        "horde/util": "^2",
         "ext-gettext": "*",
         "ext-json": "*",
-        "ext-SimpleXML": "*"
+        "ext-simplexml": "*"
     },
     "suggest": {
-        "pear-pear.horde.org/nag": "^4",
-        "pear-pear.horde.org/turba": "^4"
+        "horde/nag": "^4",
+        "horde/turba": "^4"
     },
     "replace": {
-        "pear-pear.horde.org/hermes": "2.*",
-        "pear-horde/hermes": "2.*"
     },
     "autoload": {
         "psr-0": {
