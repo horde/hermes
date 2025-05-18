@@ -14,7 +14,7 @@
 class Hermes_Form_Admin_EditClientStepTwo extends Horde_Form
 {
 
-    public function __construct(&$vars)
+    public function __construct($vars)
     {
         parent::__construct($vars, 'editclientstep2form');
 

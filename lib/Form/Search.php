@@ -19,7 +19,7 @@ class Hermes_Form_Search extends Horde_Form
 {
     protected $_useFormToken = false;
 
-    public function __construct(&$vars)
+    public function __construct($vars)
     {
         parent::__construct($vars, _("Search For Time"));
 

@@ -18,7 +18,7 @@
  */
 class Hermes_Form_Time extends Horde_Form
 {
-    public function __construct(&$vars, $name = null)
+    public function __construct($vars, $name = null)
     {
         parent::__construct($vars, $name);
     }

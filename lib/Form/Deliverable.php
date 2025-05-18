@@ -13,7 +13,7 @@
  */
 class Hermes_Form_Deliverable extends Horde_Form
 {
-    public function __construct(&$vars)
+    public function __construct($vars)
     {
         parent::__construct($vars, _("Deliverable Detail"));
 

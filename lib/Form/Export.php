@@ -21,7 +21,7 @@ class Hermes_Form_Export extends Horde_Form
 {
     protected $_useFormToken = false;
 
-    public function __construct(&$vars)
+    public function __construct($vars)
     {
         $perms = $GLOBALS['injector']->getInstance('Horde_Perms');;
         parent::__construct($vars, _("Export Search Results"));

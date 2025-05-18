@@ -19,7 +19,7 @@ class Hermes_Form_Time_Entry extends Hermes_Form_Time
      */
     protected $_costObjects;
 
-    public function __construct (&$vars)
+    public function __construct($vars)
     {
         global $conf;
 

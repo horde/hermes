@@ -9,7 +9,7 @@
  */
 class Hermes_Form_JobType_Add extends Horde_Form
 {
-    public function __construct(&$vars)
+    public function __construct($vars)
     {
         parent::__construct($vars, 'addjobtypeform');
         $this->addVariable(_("Job Type"), 'name', 'text', true);
