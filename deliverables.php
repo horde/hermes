@@ -18,7 +18,7 @@ case 'hermes_form_deliverable':
     $form->validate($vars);
     if ($form->isValid()) {
         try {
-            $form->getInfo($vars, $info);
+            $info = $form->getInfo($vars, $info);
             if (!empty($info['deliverable_id'])) {
                 $info['id'] = $info['deliverable_id'];
                 if (empty($info['parent'])) {

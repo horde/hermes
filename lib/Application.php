@@ -108,7 +108,7 @@ class Hermes_Application extends Horde_Registry_Application
             if (!$form->isValid()) {
                 return false;
             }
-            $form->getInfo($vars, $info);
+            $info = $form->getInfo($vars, $info);
             try {
                 $hours = $injector
                     ->getInstance('Hermes_Driver')
