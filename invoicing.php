@@ -73,7 +73,7 @@ $v = $form->addVariable(_("Select hours to be invoiced"), 'hours', 'tableset', t
 $v->setDefault(array_keys($list));
 
 if ($form->validate()) {
-    $info = $form->getInfo(null, $info);
+    $info = $form->getInfo();
 
     $groups = array();
     if ($info['combine']) {
