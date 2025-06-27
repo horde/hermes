@@ -46,7 +46,7 @@ if (!empty($formname)) {
         $form->validate($vars);
 
         if ($form->isValid()) {
-            $info = $form->getInfo($vars, $info);
+            $info = $form->getInfo($vars);
             try {
                 $result = $driver->updateJobType($info);
                 $notification->push(sprintf(_("The job type \"%s\" has been added."), $vars->get('name')), 'horde.success');
@@ -142,7 +142,7 @@ if (!empty($formname)) {
 
         if ($form1->isValid()) {
             // update everything.
-            $info = $form1->getInfo($vars, $info);
+            $info = $form1->getInfo($vars);
             $info['id'] = $info['jobtype'];
             try {
                 $result = $driver->updateJobType($info);

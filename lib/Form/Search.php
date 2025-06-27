@@ -149,7 +149,7 @@ class Hermes_Form_Search extends Horde_Form
         if (!$this->isValid() || !$this->isSubmitted()) {
             return null;
         }
-        $info = $this->getInfo($vars, $info);
+        $info = $this->getInfo($vars);
         $criteria = array();
         if ($GLOBALS['registry']->isAdmin(array('permission' => 'hermes:review'))) {
             if (!empty($info['employees'])) {

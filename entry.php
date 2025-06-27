@@ -51,7 +51,7 @@ case 'hermes_form_time_entry':
             exit;
     }
     if ($form->validate($vars)) {
-        $info = $form->getInfo($vars, $info);
+        $info = $form->getInfo($vars);
         try {
             if ($vars->exists('id')) {
                 $notification->push(_("Your time was successfully updated."), 'horde.success', array('sticky'));
