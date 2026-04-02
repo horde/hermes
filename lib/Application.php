@@ -17,6 +17,8 @@
  * @package Hermes
  */
 
+use Horde\Util\Variables;
+
 if (!defined('HERMES_BASE')) {
     define('HERMES_BASE', __DIR__. '/..');
 }
@@ -63,7 +65,7 @@ class Hermes_Application extends Horde_Registry_Application
         }
     }
 
-    public function download(Horde_Variables $vars)
+    public function download(Variables|Horde_Variables $vars)
     {
         global $notification, $injector;
 
