@@ -20,19 +20,16 @@ class HermesAutoincrement extends Horde_Db_Migration_Base
     public function up()
     {
         $this->changeColumn('hermes_timeslices', 'timeslice_id', 'autoincrementKey');
-        try {
+        if (in_array('hermes_timeslices_seq', $this->tables())) {
             $this->dropTable('hermes_timeslices_seq');
-        } catch (Horde_Db_Exception $e) {
         }
         $this->changeColumn('hermes_jobtypes', 'jobtype_id', 'autoincrementKey');
-        try {
+        if (in_array('hermes_jobtypes_seq', $this->tables())) {
             $this->dropTable('hermes_jobtypes_seq');
-        } catch (Horde_Db_Exception $e) {
         }
         $this->changeColumn('hermes_deliverables', 'deliverable_id', 'autoincrementKey');
-        try {
+        if (in_array('hermes_deliverables_seq', $this->tables())) {
             $this->dropTable('hermes_deliverables_seq');
-        } catch (Horde_Db_Exception $e) {
         }
     }
 
