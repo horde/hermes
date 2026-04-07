@@ -73,16 +73,15 @@ $table = new Hermes_Table(
         'params' => $criteria)
 );
 
-$template = new Horde_Template();
-$template->setOption('gettext', true);
-$template->set('postUrl', Horde::url('time.php', false, -1));
-$template->set('sessionId', Horde_Util::formInput());
-$template->set('table', $table->render());
+$view = new Horde_View(['templatePath' => HERMES_TEMPLATES . '/time']);
+$view->postUrl = Horde::url('time.php', false, -1);
+$view->sessionId = Horde_Util::formInput();
+$view->table = $table->render();
 
 $page_output->header(array(
     'title' => _("My Time")
 ));
 $notification->notify(array('listeners' => 'status'));
 echo $tabs;
-echo $template->fetch(HERMES_TEMPLATES . '/time/form.html');
+echo $view->render('form');
 $page_output->footer();
