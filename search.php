@@ -85,13 +85,12 @@ if ($session->exists('hermes', 'search_criteria')) {
                                       'name' => 'hermes/hours',
                                       'params' => $criteria));
 
-    $template = new Horde_Template();
-    $template->setOption('gettext', true);
-    $template->set('postUrl', Horde::url('time.php', false, -1));
-    $template->set('sessionId', Horde_Util::formInput());
-    $template->set('table', $table->render());
+    $view = new Horde_View(['templatePath' => HERMES_TEMPLATES . '/time']);
+    $view->postUrl = Horde::url('time.php', false, -1);
+    $view->sessionId = Horde_Util::formInput();
+    $view->table = $table->render();
 
-    echo $template->fetch(HERMES_TEMPLATES . '/time/form.html');
+    echo $view->render('form');
 }
 
 echo '<br />';
