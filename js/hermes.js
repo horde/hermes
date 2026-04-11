@@ -1,7 +1,7 @@
 /**
  * hermes.js - Base Hermes application logic.
  *
- * Copyright 2010-2017 Horde LLC (http://www.horde.org)
+ * Copyright 2010-2026 Horde LLC (http://www.horde.org)
  *
  * See the enclosed file LICENSE for license information (GPL). If you
  * did not receive this file, see http://www.horde.org/licenses/gpl.
@@ -17,7 +17,7 @@ HermesCore = {
     loading: 0,
     inAjaxCallback: false,
     server_error: 0,
-    hermesBody: $('hermesBody'),
+    hermesBody: document.getElementById('hermesBody'),
     slices: [],
     searchSlices: [],
     sortbyfield: 'sortDate',
@@ -29,7 +29,7 @@ HermesCore = {
     today: null,
     redBoxLoading: false,
     fromSearch: false,
-    wrongFormat: $H(),
+    wrongFormat: {},
     inTimerForm: false,
     pendingDeletes: [],
 
@@ -37,7 +37,7 @@ HermesCore = {
     {
         this.loading--;
         if (!this.loading) {
-            $('.hermesLoading').hide();
+            document.querySelectorAll('.hermesLoading').forEach(function(el) { el.hidden = true; });
         }
         this.closeRedBox();
         HordeCore.notify(HordeCore.text.ajax_error, 'horde.error');
@@ -76,7 +76,7 @@ HermesCore = {
      */
     go: function(fullloc, data)
     {
-        if (this.viewLoading.size()) {
+        if (this.viewLoading.length) {
             this.viewLoading.push([ fullloc, data ]);
             return;
         }
@@ -93,7 +93,7 @@ HermesCore = {
         switch (loc) {
         case 'adminjobs':
             // If user is not admin, this won't be present.
-            if (!$('hermesViewAdminjobs')) {
+            if (!document.getElementById('hermesViewAdminjobs')) {
                 this.viewLoading.pop();
                 return;
             }
@@ -101,9 +101,9 @@ HermesCore = {
         case 'search':
         case 'admindeliverables':
             this.closeView(loc);
-            locCap = loc.capitalize();
-            $('hermesNav' + locCap).addClassName('horde-subnavi-active');
-            $('hermesReturnToSearch').hide();
+            locCap = loc.charAt(0).toUpperCase() + loc.slice(1);
+            document.getElementById('hermesNav' + locCap).classList.add('horde-subnavi-active');
+            document.getElementById('hermesReturnToSearch').hidden = true;
             switch (loc) {
             case 'time':
                 this.updateView(loc);
@@ -112,17 +112,14 @@ HermesCore = {
                 // Fall through
 
             default:
-                if (!$('hermesView' + locCap)) {
+                if (!document.getElementById('hermesView' + locCap)) {
                     break;
                 }
                 this.addHistory(fullloc, loc != 'admindeliverables');
                 this.view = loc;
-                $('hermesView' + locCap).appear({
-                    duration: this.effectDur,
-                    queue: 'end',
-                    afterFinish: function() {
-                       this.loadNextView();
-                    }.bind(this)});
+                HordeFx.fadeIn(document.getElementById('hermesView' + locCap), this.effectDur, function() {
+                    this.loadNextView();
+                }.bind(this));
                 break;
             }
             break;
@@ -146,7 +143,7 @@ HermesCore = {
     {
         var current = this.viewLoading.shift(),
             next;
-        if (this.viewLoading.size()) {
+        if (this.viewLoading.length) {
             next = this.viewLoading.pop();
             this.viewLoading = [];
             if (current[0] != next[0] || current[1] || next[1]) {
@@ -170,7 +167,7 @@ HermesCore = {
     {
         location.hash = encodeURIComponent(loc);
         this.lastLocation = this.currentLocation;
-        if (Object.isUndefined(save) || save) {
+        if (save === undefined || save) {
             this.currentLocation = loc;
         }
         this.openLocation = loc;
@@ -183,107 +180,120 @@ HermesCore = {
     {
         var slice, sid, elt, id;
 
-        if (e.isRightClick() || typeof e.element != 'function') {
+        if (e.button === 2) {
             return;
         }
 
-        elt = e.element();
-        while (Object.isElement(elt)) {
-            id = elt.readAttribute('id');
+        elt = e.target;
+        while (elt instanceof Element) {
+            id = elt.getAttribute('id');
             switch (id) {
             // Main navigation links
             case 'hermesNavTime':
-                $('hermesSlices').show();
+                document.getElementById('hermesSlices').hidden = false;
                 this.go('time');
-                e.stop();
+                e.preventDefault();
+                e.stopPropagation();
                 return;
 
             case 'hermesNavSearch':
                 this.updateView('search');
                 this.go('search');
-                e.stop();
+                e.preventDefault();
+                e.stopPropagation();
                 return;
 
             case 'hermesNavAdminjobs':
                 this.go('adminjobs');
-                e.stop();
+                e.preventDefault();
+                e.stopPropagation();
                 return;
 
             case 'hermesNavAdmindeliverables':
                 this.go('admindeliverables');
-                e.stop();
+                e.preventDefault();
+                e.stopPropagation();
                 return;
 
             // Time entry form actions
             case 'hermesTimeSaveAsNew':
-                $('hermesTimeFormId').value = null;
+                document.getElementById('hermesTimeFormId').value = null;
             case 'hermesTimeSave':
                 this.saveTime();
-                $('hermesTimeFormClient').enable();
-                $('hermesTimeFormJobtype').enable();
-                $('hermesTimeFormCostobject').enable();
-                e.stop();
+                document.getElementById('hermesTimeFormClient').disabled = false;
+                document.getElementById('hermesTimeFormJobtype').disabled = false;
+                document.getElementById('hermesTimeFormCostobject').disabled = false;
+                e.preventDefault();
+                e.stopPropagation();
                 return;
             case 'hermesTimeReset':
-                $('hermesTimeSaveAsNew').hide();
-                $('hermesTimeForm').reset();
-                $('hermesTimeFormId').value = 0;
-                $('hermesTimeFormClient').enable();
-                $('hermesTimeFormJobtype').enable();
-                $('hermesTimeFormCostobject').enable();
-                e.stop();
+                document.getElementById('hermesTimeSaveAsNew').hidden = true;
+                document.getElementById('hermesTimeForm').reset();
+                document.getElementById('hermesTimeFormId').value = 0;
+                document.getElementById('hermesTimeFormClient').disabled = false;
+                document.getElementById('hermesTimeFormJobtype').disabled = false;
+                document.getElementById('hermesTimeFormCostobject').disabled = false;
+                e.preventDefault();
+                e.stopPropagation();
                 return;
 
             // Job and Deliverables
             case 'hermesJobReset':
-                $('hermesJobFormId').value = null;
-                $('hermesJobSaveAsNew').hide();
+                document.getElementById('hermesJobFormId').value = null;
+                document.getElementById('hermesJobSaveAsNew').hidden = true;
                 break;
             case 'hermesJobSaveAsNew':
-                $('hermesJobFormId').value = null;
+                document.getElementById('hermesJobFormId').value = null;
             case 'hermesJobSave':
                 this.saveJobType();
-                e.stop();
+                e.preventDefault();
+                e.stopPropagation();
                 return;
             case 'hermesDeliverablesReset':
-                $('hermesDeliverablesId').value = null;
-                $('hermesDeliverablesSaveAsNew').hide();
+                document.getElementById('hermesDeliverablesId').value = null;
+                document.getElementById('hermesDeliverablesSaveAsNew').hidden = true;
                 break;
             case 'hermesDeliverablesSaveAsNew':
-                $('hermesDeliverablesId').value = null;
+                document.getElementById('hermesDeliverablesId').value = null;
             case 'hermesDeliverablesSave':
                 this.saveDeliverables();
-                e.stop();
+                e.preventDefault();
+                e.stopPropagation();
                 return;
 
             case 'hermesSearchReset':
-                $('hermesSearchForm').reset();
-                e.stop();
+                document.getElementById('hermesSearchForm').reset();
+                e.preventDefault();
+                e.stopPropagation();
                 return;
             // Slice list actions
             case 'hermesTimeListSubmit':
             case 'hermesSearchListSubmit':
                 this.submitSlices();
-                e.stop();
+                e.preventDefault();
+                e.stopPropagation();
                 return;
 
             case 'hermesTimeListDelete':
                 if (this.view == 'time') {
-                    $('hermesLoadingTime').show();
-                    elt = $('hermesTimeListInternal');
+                    document.getElementById('hermesLoadingTime').hidden = false;
+                    elt = document.getElementById('hermesTimeListInternal');
                 } else if (this.view == 'search') {
-                    $('hermesLoadingSearch').show();
-                    elt = $('hermesSearchListInternal');
+                    document.getElementById('hermesLoadingSearch').hidden = false;
+                    elt = document.getElementById('hermesSearchListInternal');
                 }
-                elt.select('.hermesSelectedSlice').each(function(s) {
-                    this.pendingDeletes.push(s.up());
+                elt.querySelectorAll('.hermesSelectedSlice').forEach(function(s) {
+                    this.pendingDeletes.push(s.parentNode);
                 }.bind(this));
-                RedBox.showHtml($('hermesDeleteDiv').show());
-                e.stop();
+                var delDiv = document.getElementById('hermesDeleteDiv');
+                delDiv.hidden = false;
+                RedBox.showHtml(delDiv);
+                e.preventDefault();
+                e.stopPropagation();
                 return;
 
             case 'hermesSearchListHeader':
-                var el = e.element().identify();
+                var el = e.target.id || (e.target.id = 'horde_' + Date.now());
                 if (el == 'sSortDate' ||
                     el == 'sSortClient' ||
                     el == 'sSortEmployee' ||
@@ -293,12 +303,13 @@ HermesCore = {
                     el == 'sSortBill' ||
                     el == 'sSortDesc') {
 
-                    this.handleSearchSort(e.element());
-                    e.stop();
+                    this.handleSearchSort(e.target);
+                    e.preventDefault();
+                    e.stopPropagation();
                 }
                 return;
             case 'hermesTimeListHeader':
-                var el = e.element().identify();
+                var el = e.target.id || (e.target.id = 'horde_' + Date.now());
                 if (el == 'sortDate' ||
                     el == 'sortClient' ||
                     el == 'sortCostObject' ||
@@ -307,51 +318,60 @@ HermesCore = {
                     el == 'sortBill' ||
                     el == 'sortDesc') {
 
-                    this.handleEntrySort(e.element());
-                    e.stop();
+                    this.handleEntrySort(e.target);
+                    e.preventDefault();
+                    e.stopPropagation();
                 }
                 return;
 
             // Timer form
             case 'hermesAddTimer':
-                RedBox.showHtml($('hermesTimerDialog').show());
+                var timerDlg = document.getElementById('hermesTimerDialog');
+                timerDlg.hidden = false;
+                RedBox.showHtml(timerDlg);
                 this.inTimerForm = true;
                 return;
 
             case 'hermesTimerSave':
                 this.newTimer();
                 this.closeRedBox();
-                e.stop();
+                e.preventDefault();
+                e.stopPropagation();
                 return;
 
             case 'hermesExportCancel':
             case 'hermesTimerCancel':
                 this.closeRedBox();
-                e.stop();
+                e.preventDefault();
+                e.stopPropagation();
                 return;
 
             // Export
             case 'hermesExport':
-                RedBox.showHtml($('hermesExportDialog').show());
+                var exportDlg = document.getElementById('hermesExportDialog');
+                exportDlg.hidden = false;
+                RedBox.showHtml(exportDlg);
                 return;
 
             case 'hermesDoExport':
                 var keys = this.getSearchResultKeys();
-                $('hermesExportFormS').setValue(keys.join(','));
-                $('hermesExportForm').submit();
+                document.getElementById('hermesExportFormS').value = keys.join(',');
+                document.getElementById('hermesExportForm').submit();
                 return;
 
             // Search Form
             case 'hermesSearch':
                 this.search();
-                e.stop();
+                e.preventDefault();
+                e.stopPropagation();
                 return;
 
             case 'hermesReturnToSearch':
                 // Refresh the search in case anything changed.
                 this.search();
                 this.go('search');
-                e.stop();
+                e.preventDefault();
+                e.stopPropagation();
                 return;
 
             case 'hermesDeliverablesClose':
@@ -385,103 +405,115 @@ HermesCore = {
 
             switch (elt.className) {
             case 'hermesDatePicker':
-                id = elt.readAttribute('id');
-                Horde_Calendar.open(id, Date.parseExact($F(id.replace(/Picker$/, 'Date')), Hermes.conf.date_format));
-                e.stop();
+                id = elt.getAttribute('id');
+                Horde_Calendar.open(id, Date.parseExact(document.getElementById(id.replace(/Picker$/, 'Date')).value, Hermes.conf.date_format));
+                e.preventDefault();
+                e.stopPropagation();
                 return;
             }
 
-            if (elt.hasClassName('hermesTimeListSelect')) {
-                if (elt.up().identify() == 'hermesTimeListHeader' ||
-                    elt.up().identify() == 'hermesSearchListHeader') {
+            if (elt.classList.contains('hermesTimeListSelect')) {
+                if (elt.parentNode.id == 'hermesTimeListHeader' ||
+                    elt.parentNode.id == 'hermesSearchListHeader') {
                     this.toggleAllRows(elt);
-                    e.stop();
+                    e.preventDefault();
+                    e.stopPropagation();
                     return;
                 }
 
-                elt.up().toggleClassName('hermesSelectedRow');
-                elt.toggleClassName('hermesSelectedSlice');
-                elt.toggleClassName('hermesUnselectedSlice');
+                elt.parentNode.classList.toggle('hermesSelectedRow'); // eslint-disable-line horde/no-prototype-methods
+                elt.classList.toggle('hermesSelectedSlice'); // eslint-disable-line horde/no-prototype-methods
+                elt.classList.toggle('hermesUnselectedSlice'); // eslint-disable-line horde/no-prototype-methods
                 this.checkSelected();
-                e.stop();
+                e.preventDefault();
+                e.stopPropagation();
                 return;
-            } else if (elt.hasClassName('sliceDelete')) {
-                this.pendingDeletes.push(elt.up().up());
-                RedBox.showHtml($('hermesDeleteDiv').show());
-                e.stop();
+            } else if (elt.classList.contains('sliceDelete')) {
+                this.pendingDeletes.push(elt.parentNode.parentNode);
+                var delDiv2 = document.getElementById('hermesDeleteDiv');
+                delDiv2.hidden = false;
+                RedBox.showHtml(delDiv2);
+                e.preventDefault();
+                e.stopPropagation();
                 return;
-            } else if (elt.hasClassName('sliceEdit')) {
-                slice = elt.up().up();
-                sid = slice.retrieve('sid');
+            } else if (elt.classList.contains('sliceEdit')) {
+                slice = elt.parentNode.parentNode;
+                sid = slice.dataset.sid;
                 this.populateSliceForm(sid);
-                e.stop();
+                e.preventDefault();
+                e.stopPropagation();
                 return;
-            } else if (elt.hasClassName('timer-saveable')) {
+            } else if (elt.classList.contains('timer-saveable')) {
                 this.stopTimer(elt);
-                e.stop();
+                e.preventDefault();
+                e.stopPropagation();
                 return;
-            } else if (elt.hasClassName('timer-running')) {
+            } else if (elt.classList.contains('timer-running')) {
                 this.pauseTimer(elt);
-                e.stop();
+                e.preventDefault();
+                e.stopPropagation();
                 return;
-            } else if (elt.hasClassName('timer-paused')) {
+            } else if (elt.classList.contains('timer-paused')) {
                 this.playTimer(elt);
-                e.stop();
+                e.preventDefault();
+                e.stopPropagation();
                 return;
-            } else if (elt.hasClassName('jobTypeEdit')) {
-                this.jobtypeEdit(elt.up().up().retrieve('jid'));
-                e.stop();
+            } else if (elt.classList.contains('jobTypeEdit')) {
+                this.jobtypeEdit(elt.parentNode.parentNode.dataset.jid);
+                e.preventDefault();
+                e.stopPropagation();
                 return;
-            } else if (elt.hasClassName('jobTypeDelete')) {
-                this.deleteJobType(elt.up().up());
-                e.stop();
+            } else if (elt.classList.contains('jobTypeDelete')) {
+                this.deleteJobType(elt.parentNode.parentNode);
+                e.preventDefault();
+                e.stopPropagation();
                 return;
-            } else if (elt.hasClassName('deliverableEdit')) {
-                this.deliverableEdit(elt.up().up().retrieve('did'));
-                e.stop();
+            } else if (elt.classList.contains('deliverableEdit')) {
+                this.deliverableEdit(elt.parentNode.parentNode.dataset.did);
+                e.preventDefault();
+                e.stopPropagation();
                 return;
-            } else if (elt.hasClassName('deliverableDelete')) {
-                this.deleteDeliverable(elt.up().up());
-                e.stop();
+            } else if (elt.classList.contains('deliverableDelete')) {
+                this.deleteDeliverable(elt.parentNode.parentNode);
+                e.preventDefault();
+                e.stopPropagation();
                 return;
-            } else if (elt.hasClassName('deliverableDetail')) {
-                this.getDeliverableDetail(elt.up().up());
-                e.stop();
+            } else if (elt.classList.contains('deliverableDetail')) {
+                this.getDeliverableDetail(elt.parentNode.parentNode);
+                e.preventDefault();
+                e.stopPropagation();
                 return;
             }
-            elt = elt.up();
+            elt = elt.parentNode;
         }
-
-        // Workaround Firebug bug.
-        Prototype.emptyFunction();
     },
 
     // elt Element for the checkall checkbox
     toggleAllRows: function(elt)
     {
         var select = false, target;
-        if (elt.hasClassName('hermesUnselectedSlice')) {
+        if (elt.classList.contains('hermesUnselectedSlice')) {
            select = true;
         }
-        if (elt.up().identify() == 'hermesTimeListHeader') {
-            target = $('hermesTimeListInternal');
+        if (elt.parentNode.id == 'hermesTimeListHeader') {
+            target = document.getElementById('hermesTimeListInternal');
         } else {
-            target = $('hermesSearchListInternal');
+            target = document.getElementById('hermesSearchListInternal');
         }
-        target.select('.hermesTimeListRow').each(function(e) {
-            var c = e.down();
-            if (select && !e.hasClassName('QuickFinderNoMatch')) {
-                c.addClassName('hermesSelectedSlice');
-                c.up().addClassName('hermesSelectedRow');
-                c.removeClassName('hermesUnselectedSlice');
+        target.querySelectorAll('.hermesTimeListRow').forEach(function(e) {
+            var c = e.firstElementChild;
+            if (select && !e.classList.contains('QuickFinderNoMatch')) {
+                c.classList.add('hermesSelectedSlice');
+                c.parentNode.classList.add('hermesSelectedRow');
+                c.classList.remove('hermesUnselectedSlice');
             } else {
-                c.up().removeClassName('hermesSelectedRow');
-                c.removeClassName('hermesSelectedSlice');
-                c.addClassName('hermesUnselectedSlice');
+                c.parentNode.classList.remove('hermesSelectedRow');
+                c.classList.remove('hermesSelectedSlice');
+                c.classList.add('hermesUnselectedSlice');
             }
         });
-        elt.toggleClassName('hermesUnselectedSlice');
-        elt.toggleClassName('hermesSelectedSlice');
+        elt.classList.toggle('hermesUnselectedSlice'); // eslint-disable-line horde/no-prototype-methods
+        elt.classList.toggle('hermesSelectedSlice'); // eslint-disable-line horde/no-prototype-methods
         this.checkSelected();
     },
 
@@ -493,26 +525,20 @@ HermesCore = {
     {
         var haveSelected = false;
         if (this.view == 'time') {
-            $('hermesTimeListInternal').select('.hermesSelectedSlice').each(function(s) {
-                haveSelected = true;
-                throw $break;
-            }.bind(this));
+            haveSelected = !!document.getElementById('hermesTimeListInternal').querySelector('.hermesSelectedSlice');
             if (haveSelected) {
-                $('hermesTimeListSubmit').enable();
-                $('hermesTimeListDelete').enable();
+                document.getElementById('hermesTimeListSubmit').disabled = false;
+                document.getElementById('hermesTimeListDelete').disabled = false;
             } else {
-                $('hermesTimeListSubmit').disable();
-                $('hermesTimeListDelete').disable();
+                document.getElementById('hermesTimeListSubmit').disabled = true;
+                document.getElementById('hermesTimeListDelete').disabled = true;
             }
         } else if (this.view == 'search') {
-            $('hermesSearchListInternal').select('.hermesSelectedSlice').each(function(s) {
-                haveSelected = true;
-                throw $break;
-            }.bind(this));
+            haveSelected = !!document.getElementById('hermesSearchListInternal').querySelector('.hermesSelectedSlice');
             if (haveSelected) {
-                $('hermesSearchListSubmit').enable()
+                document.getElementById('hermesSearchListSubmit').disabled = false;
             } else {
-                $('hermesSearchListSubmit').disable();
+                document.getElementById('hermesSearchListSubmit').disabled = true;
             }
         }
     },
@@ -527,36 +553,37 @@ HermesCore = {
         var slice = this.getSliceFromCache(sid, this.view),
             d = this.parseDate(slice.d);
 
-        $('hermesTimeSaveAsNew').show();
-        $('hermesTimeFormClient').setValue(slice.c);
+        document.getElementById('hermesTimeSaveAsNew').hidden = false;
+        document.getElementById('hermesTimeFormClient').value = slice.c;
 
         HordeCore.doAction('listDeliverablesSelect',
-            { 'c': $F('hermesTimeFormClient') },
+            { 'c': document.getElementById('hermesTimeFormClient').value },
             { 'callback': function(r) {
                   this.listDeliverablesCallback(r);
-                  $('hermesTimeFormCostobject').setValue(slice.co);
+                  document.getElementById('hermesTimeFormCostobject').value = slice.co;
                 }.bind(this)
             }
         );
-        $('hermesTimeFormStartDate').setValue(d.toString(Hermes.conf.date_format));
-        $('hermesTimeFormHours').setValue(slice.h);
-        $('hermesTimeFormJobtype').setValue(slice.t);
-        $('hermesTimeFormDesc').setValue(slice.desc);
-        $('hermesTimeFormNotes').setValue(slice.n);
-        $('hermesTimeFormId').setValue(slice.i);
-        $('hermesTimeFormBillable').setValue(slice.b == 1);
+        document.getElementById('hermesTimeFormStartDate').value = d.toString(Hermes.conf.date_format);
+        document.getElementById('hermesTimeFormHours').value = slice.h;
+        document.getElementById('hermesTimeFormJobtype').value = slice.t;
+        document.getElementById('hermesTimeFormDesc').value = slice.desc;
+        document.getElementById('hermesTimeFormNotes').value = slice.n;
+        document.getElementById('hermesTimeFormId').value = slice.i;
+        document.getElementById('hermesTimeFormBillable').value = slice.b == 1;
 
-        if ($('hermesTimeFormEmployee')) {
-            $('hermesTimeFormEmployee').setValue(slice.e);
+        var empField = document.getElementById('hermesTimeFormEmployee');
+        if (empField) {
+            empField.value = slice.e;
         }
-        $('hermesTimeFormCollapse').update(Hermes.text.edittime);
+        document.getElementById('hermesTimeFormCollapse').innerHTML = Hermes.text.edittime;
 
         // We might be on the search form when we click edit.
         this.fromSearch = (this.view == 'search');
         if (this.view != 'time') {
-            $('hermesSlices').hide();
+            document.getElementById('hermesSlices').hidden = true;
             this.go('time');
-            $('hermesReturnToSearch').show();
+            document.getElementById('hermesReturnToSearch').hidden = false;
         }
     },
 
@@ -566,8 +593,8 @@ HermesCore = {
     deleteJobType: function(elt)
     {
         HordeCore.doAction('deleteJobType',
-            { 'id': elt.retrieve('jid') },
-            { 'callback': this.deleteJobTypeCallback.curry(elt).bind(this) }
+            { 'id': elt.dataset.jid },
+            { 'callback': this.deleteJobTypeCallback.bind(this, elt) }
         );
     },
 
@@ -576,7 +603,7 @@ HermesCore = {
      */
     deleteJobTypeCallback: function(elt)
     {
-        elt.fade({ duration: this.effectDur, queue: 'end' });
+        HordeFx.fadeOut(elt, this.effectDur);
     },
 
     /**
@@ -587,13 +614,13 @@ HermesCore = {
     deleteSlice: function(slices)
     {
         var sid = [];
-        slices.each(function(s) {
-            sid.push(s.retrieve('sid'));
+        slices.forEach(function(s) {
+            sid.push(s.dataset.sid);
         });
-        $('hermesLoadingTime').show();
+        document.getElementById('hermesLoadingTime').hidden = false;
         HordeCore.doAction('deleteSlice',
             { 'id': sid },
-            { 'callback': this.deletesliceCallback.curry(slices).bind(this) }
+            { 'callback': this.deletesliceCallback.bind(this, slices) }
         );
     },
 
@@ -603,11 +630,11 @@ HermesCore = {
      */
     deletesliceCallback: function(elts)
     {
-        $('hermesLoadingTime').hide();
-        elts.each(function(elt) {
+        document.getElementById('hermesLoadingTime').hidden = true;
+        elts.forEach(function(elt) {
             this.removeSliceFromUI(elt);
             if (this.view == 'search') {
-                this.removeSliceFromCache(elt.retrieve('sid'), 'search');
+                this.removeSliceFromCache(elt.dataset.sid, 'search');
                 this.updateSearchTotal();
             }
         }.bind(this));
@@ -621,15 +648,14 @@ HermesCore = {
      */
     removeSliceFromUI: function(elt)
     {
-        elt.fade({
-            duration: this.effectDur,
-            queue: 'end',
-            afterFinish: function() {
-                elt.down().removeClassName('hermesSelectedSlice');
-                this.checkSelected();
-            }.bind(this)
-        });
-        this.removeSliceFromCache(elt.retrieve('sid'));
+        HordeFx.fadeOut(elt, this.effectDur, function() {
+            var first = elt.firstElementChild;
+            if (first) {
+                first.classList.remove('hermesSelectedSlice');
+            }
+            this.checkSelected();
+        }.bind(this));
+        this.removeSliceFromCache(elt.dataset.sid);
         this.updateTimeSummary();
     },
 
@@ -689,29 +715,35 @@ HermesCore = {
      */
     replaceSliceInUI: function(sid, slice, view)
     {
-        var t;
+        var t, rows;
 
         if (view == 'search') {
-            t = $('hermesSearchListInternal');
-            t.select('.hermesTimeListRow').each(function(r) {
-                if (r.retrieve('sid') == sid) {
-                    r.insert({ before: this.buildSearchRow(slice).show() });
-                    r.remove();
-                    throw $break;
+            t = document.getElementById('hermesSearchListInternal');
+            rows = t.querySelectorAll('.hermesTimeListRow');
+            for (var i = 0; i < rows.length; i++) {
+                if (rows[i].dataset.sid == sid) {
+                    var newRow = this.buildSearchRow(slice);
+                    newRow.hidden = false;
+                    rows[i].before(newRow);
+                    rows[i].remove();
+                    break;
                 }
-            }.bind(this));
+            }
         } else if (view == 'time') {
-            t = $('hermesTimeListInternal');
-            t.select('.hermesTimeListRow').each(function(r) {
-                if (r.retrieve('sid') == sid) {
+            t = document.getElementById('hermesTimeListInternal');
+            rows = t.querySelectorAll('.hermesTimeListRow');
+            for (var i = 0; i < rows.length; i++) {
+                if (rows[i].dataset.sid == sid) {
                     if (slice) {
-                        r.insert({ before: this.buildSliceRow(slice).show() });
+                        var newRow = this.buildSliceRow(slice);
+                        newRow.hidden = false;
+                        rows[i].before(newRow);
                     }
-                    r.remove();
+                    rows[i].remove();
                     this.updateTimeSummary();
-                    throw $break;
+                    break;
                 }
-            }.bind(this));
+            }
         }
     },
 
@@ -760,8 +792,8 @@ HermesCore = {
      */
     datePickerHandler: function(e)
     {
-        var field = e.element().previous();
-        field.setValue(e.memo.toString(Hermes.conf.date_format));
+        var field = e.target.previousElementSibling;
+        field.value = e.detail.toString(Hermes.conf.date_format);
     },
 
     /**
@@ -772,19 +804,19 @@ HermesCore = {
     {
         if (this.inTimerForm) {
             HordeCore.doAction('listDeliverablesSelect',
-                { 'c': $F('hermesTimerClient') },
+                { 'c': document.getElementById('hermesTimerClient').value },
                 { 'callback': this.listDeliverablesCallback.bind(this) }
             );
         } else if (this.view == 'time') {
-            $('hermesLoadingTime').show();
+            document.getElementById('hermesLoadingTime').hidden = false;
             HordeCore.doAction('listDeliverablesSelect',
-                { 'c': $F('hermesTimeFormClient') },
+                { 'c': document.getElementById('hermesTimeFormClient').value },
                 { 'callback': this.listDeliverablesCallback.bind(this) }
             );
         } else if (this.view == 'search') {
-            $('hermesLoadingSearch').show();
+            document.getElementById('hermesLoadingSearch').hidden = false;
             HordeCore.doAction('listDeliverablesSelect',
-                { 'c': $F('hermesSearchFormClient') },
+                { 'c': document.getElementById('hermesSearchFormClient').value },
                 { 'callback': this.listDeliverablesCallback.bind(this) }
             );
         }
@@ -807,12 +839,12 @@ HermesCore = {
     jobtypeEditCallback: function(r)
     {
         var job = r[0];
-        $('hermesJobFormName').setValue(job.name);
-        $('hermesJobFormId').setValue(job.id);
-        $('hermesJobFormBillable').setValue(job.billable == 1);
-        $('hermesJobFormEnabled').setValue(job.enabled == 1);
-        $('hermesJobFormRate').setValue(job.rate);
-        $('hermesJobSaveAsNew').show();
+        document.getElementById('hermesJobFormName').value = job.name;
+        document.getElementById('hermesJobFormId').value = job.id;
+        document.getElementById('hermesJobFormBillable').value = job.billable == 1;
+        document.getElementById('hermesJobFormEnabled').value = job.enabled == 1;
+        document.getElementById('hermesJobFormRate').value = job.rate;
+        document.getElementById('hermesJobSaveAsNew').hidden = false;
     },
 
     /**
@@ -821,10 +853,10 @@ HermesCore = {
      */
     getDeliverableDetail: function(elt)
     {
-        var dname = $(elt).down(0).innerHTML, budget = $(elt).down(2).innerHTML;
+        var dname = elt.firstElementChild.innerHTML, budget = elt.children[2].innerHTML;
         HordeCore.doAction('getDeliverableDetail',
-            { id: elt.retrieve('did') },
-            { callback: this.getDeliverableDetailCallback.curry(dname, budget).bind(this) }
+            { id: elt.dataset.did },
+            { callback: this.getDeliverableDetailCallback.bind(this, dname, budget) }
         );
     },
 
@@ -840,7 +872,7 @@ HermesCore = {
     {
         var b = { 'billable': 0, 'nonbillable': 0 },
         t = {}, h = 0, over = 0, employees = {};
-        r.each(function(s) {
+        r.forEach(function(s) {
             // Billable data
             b.billable += (s.b * 1) ? (s.h * 1) : 0;
             b.nonbillable += (s.b * 1) ? 0 : (s.h * 1);
@@ -867,10 +899,11 @@ HermesCore = {
         over = Math.max(h - budget, 0);
         h -= over;
 
-        var cell = $('hermesStatText').down('th');
-        cell.update(h + over);
-        cell = cell.next().update(budget);
-        cell.next().update(budget - (h + over));
+        var cell = document.getElementById('hermesStatText').querySelector('th');
+        cell.innerHTML = h + over;
+        cell = cell.nextElementSibling;
+        cell.innerHTML = budget;
+        cell.nextElementSibling.innerHTML = budget - (h + over);
 
         RedBox.onDisplay = function() {
             if (this.redBoxOnDisplay) {
@@ -880,15 +913,17 @@ HermesCore = {
             this.drawBudgetGraph(h, budget, over);
             this.drawBillableGraph(b);
             var typeData = [];
-            $H(t).each(function (type) {
-                typeData.push({ data: [ [0, type.value] ], label: type.key });
+            Object.keys(t).forEach(function(key) {
+                typeData.push({ data: [ [0, t[key]] ], label: key });
             });
             this.drawTypeGraph(typeData);
             this.doDeliverableEmployeeStats(employees);
         }.bind(this);
 
-        $('hermesDeliverableDetail').down('h1').down('span').update(dname);
-        RedBox.showHtml($('hermesDeliverableDetail').show());
+        document.getElementById('hermesDeliverableDetail').querySelector('h1 span').innerHTML = dname;
+        var detailEl = document.getElementById('hermesDeliverableDetail');
+        detailEl.hidden = false;
+        RedBox.showHtml(detailEl);
     },
 
     /**
@@ -897,11 +932,12 @@ HermesCore = {
      doDeliverableEmployeeStats: function(employees)
      {
         var i = -1, data, b_data = [], nb_data = [], emp = [];
-        $H(employees).each(function(m) {
+        Object.keys(employees).forEach(function(key) {
+            var m = employees[key];
             i++;
-            b_data.push([m.value.billable, i]);
-            nb_data.push([m.value.nonbillable, i]);
-            emp[i] = m.key;
+            b_data.push([m.billable, i]);
+            nb_data.push([m.nonbillable, i]);
+            emp[i] = key;
         });
         data = [
             {
@@ -921,7 +957,7 @@ HermesCore = {
         ];
 
         Flotr.draw(
-            $('hermesDeliverableEmployees'),
+            document.getElementById('hermesDeliverableEmployees'),
             data,
             {
                 bars: {
@@ -951,7 +987,7 @@ HermesCore = {
     drawTypeGraph: function(typeData)
     {
         Flotr.draw(
-            $('hermesDeliverableType'),
+            document.getElementById('hermesDeliverableType'),
             typeData,
             {
                 colors: ['#CB4B4B', '#4DA74D', '#9440ED', '#C0D800','#00A8F0'],
@@ -985,7 +1021,7 @@ HermesCore = {
         var data = [];
 
         if (b.billable == 0 && b.nonbillable == 0) {
-            $('hermesDeliverableBillable').update();
+            document.getElementById('hermesDeliverableBillable').innerHTML = '';
         } else {
             if (b.billable != 0) {
                 data.push({ data: [ [0, b.billable ] ], label: Hermes.text['billable'] });
@@ -995,7 +1031,7 @@ HermesCore = {
             }
         }
         Flotr.draw(
-            $('hermesDeliverableBillable'),
+            document.getElementById('hermesDeliverableBillable'),
             data,
             {
                 title: Hermes.text['hours'],
@@ -1024,7 +1060,7 @@ HermesCore = {
     drawBudgetGraph: function(h, budget, over)
     {
         Flotr.draw(
-            $('hermesDeliverableStats'),
+            document.getElementById('hermesDeliverableStats'),
             [
                 { data: [ [ h, 0] ] },
                 { data: [ [ budget - h, 0] ] },
@@ -1058,8 +1094,8 @@ HermesCore = {
     deleteDeliverable: function(elt)
     {
         HordeCore.doAction('deleteDeliverable',
-            { 'deliverable_id': elt.retrieve('did') },
-            { 'callback': this.deleteDeliverableCallback.curry(elt).bind(this) }
+            { 'deliverable_id': elt.dataset.did },
+            { 'callback': this.deleteDeliverableCallback.bind(this, elt) }
         );
     },
 
@@ -1068,7 +1104,7 @@ HermesCore = {
      */
     deleteDeliverableCallback: function(elt)
     {
-        elt.fade({ duration: this.effectDur, queue: 'end' });
+        HordeFx.fadeOut(elt, this.effectDur);
     },
 
     /**
@@ -1089,12 +1125,12 @@ HermesCore = {
      deliverableEditCallback: function(r)
      {
         var d = r[0];
-        $('hermesDeliverablesFormName').setValue(d.name);
-        $('hermesDeliverablesId').setValue(d.id);
-        $('hermesDeliverablesFormActive').setValue(d.active == 1);
-        $('hermesDeliverablesFormEstimate').setValue(d.estimate);
-        $('hermesDeliverablesFormDesc').setValue(d.description);
-        $('hermesDeliverablesSaveAsNew').show();
+        document.getElementById('hermesDeliverablesFormName').value = d.name;
+        document.getElementById('hermesDeliverablesId').value = d.id;
+        document.getElementById('hermesDeliverablesFormActive').value = d.active == 1;
+        document.getElementById('hermesDeliverablesFormEstimate').value = d.estimate;
+        document.getElementById('hermesDeliverablesFormDesc').value = d.description;
+        document.getElementById('hermesDeliverablesSaveAsNew').hidden = false;
      },
 
     /**
@@ -1107,22 +1143,25 @@ HermesCore = {
 
     updateCostObjects: function(r, view)
     {
-        var h = $H(r), elm;
+        var elm;
 
         if (view == 'time') {
-            $('hermesLoadingTime').hide();
-            elm = $('hermesTimeFormCostobject');
+            document.getElementById('hermesLoadingTime').hidden = true;
+            elm = document.getElementById('hermesTimeFormCostobject');
         } else if (view == 'search') {
-            $('hermesLoadingSearch').hide();
-            elm = $('hermesSearchFormCostobject');
+            document.getElementById('hermesLoadingSearch').hidden = true;
+            elm = document.getElementById('hermesSearchFormCostobject');
         } else if (view == 'timer') {
-            elm = $('hermesTimerCostObject');
+            elm = document.getElementById('hermesTimerCostObject');
         }
-        elm.childElements().each(function(el) {
-            el.remove();
-        });
-        h.each(function(i) {
-           elm.insert(new Element('option', { 'value': i.key }).insert(i.value));
+        while (elm.lastChild) {
+            elm.lastChild.remove();
+        }
+        Object.keys(r).forEach(function(key) {
+            var opt = document.createElement('option');
+            opt.value = key;
+            opt.textContent = r[key];
+            elm.appendChild(opt);
         });
     },
 
@@ -1131,12 +1170,12 @@ HermesCore = {
      */
     saveDeliverables: function()
     {
-        if (!$F('hermesDeliverablesClientSelect')) {
+        if (!document.getElementById('hermesDeliverablesClientSelect').value) {
             HordeCore.notify(Hermes.text.missing_client, 'horde.warning');
             return;
         }
-        var params = $H($('hermesDeliverablesForm').serialize({ hash: true }));
-        params.set('client_id', $F('hermesDeliverablesClientSelect'));
+        var params = Object.fromEntries(new FormData(document.getElementById('hermesDeliverablesForm')));
+        params.client_id = document.getElementById('hermesDeliverablesClientSelect').value;
         HordeCore.doAction('updateDeliverable',
             params,
             { 'callback': this.saveDeliverableCallback.bind(this) }
@@ -1149,13 +1188,13 @@ HermesCore = {
     saveDeliverableCallback: function(r)
     {
         HordeCore.doAction('listDeliverables',
-            { 'c': $F('hermesDeliverablesClientSelect') },
+            { 'c': document.getElementById('hermesDeliverablesClientSelect').value },
             { 'callback': this.listDeliverablesAdminCallback.bind(this) }
         );
 
-        $('hermesDeliverablesId').value = null;
-        $('hermesDeliverablesSaveAsNew').hide();
-        $('hermesDeliverablesForm').reset();
+        document.getElementById('hermesDeliverablesId').value = null;
+        document.getElementById('hermesDeliverablesSaveAsNew').hidden = true;
+        document.getElementById('hermesDeliverablesForm').reset();
     },
 
     /**
@@ -1163,13 +1202,13 @@ HermesCore = {
      */
     saveJobType: function()
     {
-        if (!$F('hermesJobFormName')) {
+        if (!document.getElementById('hermesJobFormName').value) {
             HordeCore.notify(Hermes.text.fix_form_values, 'horde.warning');
             return;
         }
 
-        var params = $H($('hermesJobForm').serialize({ hash: true }));
-        if ($F('hermesJobFormId') > 0) {
+        var params = Object.fromEntries(new FormData(document.getElementById('hermesJobForm')));
+        if (document.getElementById('hermesJobFormId').value > 0) {
             HordeCore.doAction('updateJobType',
                params,
                { 'callback': this.updateJobTypeCallback.bind(this) }
@@ -1211,18 +1250,25 @@ HermesCore = {
      */
     updateJobTypeListCallback: function(r)
     {
-        var o, jsl = new Element('select', { 'id': 'hermesTimeFormJobtype'});
+        var jsl = document.createElement('select');
+        jsl.id = 'hermesTimeFormJobtype';
 
-        jsl.insert(new Element('option', { value: '' }).update('--- ' + Hermes.text.select_jobtype + ' ---'));
+        var defaultOpt = document.createElement('option');
+        defaultOpt.value = '';
+        defaultOpt.textContent = '--- ' + Hermes.text.select_jobtype + ' ---';
+        jsl.appendChild(defaultOpt);
         for (var i = 0; i < r.length; i++) {
             if (r[i].enabled) {
-                jsl.insert(new Element('option', { value: r[i].id }).update(r[i].name));
+                var opt = document.createElement('option');
+                opt.value = r[i].id;
+                opt.textContent = r[i].name;
+                jsl.appendChild(opt);
             }
         }
-        $('hermesTimeFormJobtype').replace(jsl);
-        $('hermesJobFormId').value = null;
-        $('hermesJobSaveAsNew').hide();
-        $('hermesJobForm').reset();
+        document.getElementById('hermesTimeFormJobtype').replaceWith(jsl);
+        document.getElementById('hermesJobFormId').value = null;
+        document.getElementById('hermesJobSaveAsNew').hidden = true;
+        document.getElementById('hermesJobForm').reset();
     },
 
     /**
@@ -1231,7 +1277,7 @@ HermesCore = {
     deliverablesClientChangeHandler: function()
     {
         HordeCore.doAction('listDeliverables',
-            { 'c': $F('hermesDeliverablesClientSelect') },
+            { 'c': document.getElementById('hermesDeliverablesClientSelect').value },
             { 'callback': this.listDeliverablesAdminCallback.bind(this) }
         );
     },
@@ -1241,9 +1287,12 @@ HermesCore = {
      */
     listDeliverablesAdminCallback: function(r)
     {
-        var t = $('hermesDeliverablesListInternal').update();
-        r.each(function(jt) {
-            t.insert(this.buildDeliverablesRow(jt).toggle());
+        var t = document.getElementById('hermesDeliverablesListInternal');
+        t.innerHTML = '';
+        r.forEach(function(jt) {
+            var row = this.buildDeliverablesRow(jt);
+            row.hidden = !row.hidden;
+            t.appendChild(row);
         }.bind(this));
     },
 
@@ -1254,23 +1303,28 @@ HermesCore = {
     {
         var row, cell, d;
 
-        row = $('hermesDeliverablesTemplate').clone(true);
-        row.addClassName('hermesDeliverablesRow');
+        row = document.getElementById('hermesDeliverablesTemplate').cloneNode(true);
+        row.classList.add('hermesDeliverablesRow');
         row.removeAttribute('id');
-        row.store('did', jt.id);
-        cell = row.down().update(jt.name);
-        cell = cell.next().update((jt.active == 1) ? 'Y' : 'N');
-        cell = cell.next().update(jt.estimate);
-        cell = cell.next().update(jt.hours);
-        cell = cell.next().update(jt.description);
+        row.dataset.did = jt.id;
+        cell = row.firstElementChild;
+        cell.innerHTML = jt.name;
+        cell = cell.nextElementSibling;
+        cell.innerHTML = (jt.active == 1) ? 'Y' : 'N';
+        cell = cell.nextElementSibling;
+        cell.innerHTML = jt.estimate;
+        cell = cell.nextElementSibling;
+        cell.innerHTML = jt.hours;
+        cell = cell.nextElementSibling;
+        cell.innerHTML = jt.description;
         if (!Hermes.conf.has_deliverableadmin) {
             // No delverabile admin perms
-            cell.next().remove();
+            cell.nextElementSibling.remove();
         } else if (jt.is_external) {
             // Can't edit|delete, it's an API cost object.
-            cell = cell.next();
-            cell.down().remove();
-            cell.down().remove();
+            cell = cell.nextElementSibling;
+            cell.firstElementChild.remove();
+            cell.firstElementChild.remove();
         }
 
         return row;
@@ -1281,22 +1335,23 @@ HermesCore = {
      */
     saveTime: function()
     {
-        if (!$F('hermesTimeFormDesc') ||
-            !$F('hermesTimeFormHours') ||
-            !$F('hermesTimeFormJobtype') ||
-            this.wrongFormat.size()) {
+        if (!document.getElementById('hermesTimeFormDesc').value ||
+            !document.getElementById('hermesTimeFormHours').value ||
+            !document.getElementById('hermesTimeFormJobtype').value ||
+            Object.keys(this.wrongFormat).length) {
 
             HordeCore.notify(Hermes.text.fix_form_values, 'horde.warning');
             return;
         }
 
-        var params = $H($('hermesTimeForm').serialize({ hash: true }));
+        var params = Object.fromEntries(new FormData(document.getElementById('hermesTimeForm')));
 
-        $('hermesLoadingTime').show();
-        if ($F('hermesTimeFormId') > 0) {
+        document.getElementById('hermesLoadingTime').hidden = false;
+        var formId = document.getElementById('hermesTimeFormId').value;
+        if (formId > 0) {
             HordeCore.doAction('updateSlice',
                 params,
-                { 'callback': this.editSliceCallback.curry($F('hermesTimeFormId')).bind(this) }
+                { 'callback': this.editSliceCallback.bind(this, formId) }
             );
         } else {
             HordeCore.doAction('enterTime',
@@ -1304,8 +1359,8 @@ HermesCore = {
                 { 'callback': this.saveTimeCallback.bind(this) }
             );
         }
-        $('hermesTimeSaveAsNew').hide();
-        $('hermesTimeFormCollapse').update(Hermes.text.timeentry);
+        document.getElementById('hermesTimeSaveAsNew').hidden = true;
+        document.getElementById('hermesTimeFormCollapse').innerHTML = Hermes.text.timeentry;
     },
 
     /**
@@ -1316,7 +1371,7 @@ HermesCore = {
      */
     saveTimeCallback: function(r)
     {
-        $('hermesLoadingTime').hide();
+        document.getElementById('hermesLoadingTime').hidden = true;
 
         if (r === true) {
             // Successfully entered, but not for current user. Don't add to UI.
@@ -1345,9 +1400,9 @@ HermesCore = {
      */
     search: function()
     {
-        var params = $H($('hermesSearchForm').serialize({ hash: true }));
+        var params = Object.fromEntries(new FormData(document.getElementById('hermesSearchForm')));
 
-        $('hermesLoadingSearch').show();
+        document.getElementById('hermesLoadingSearch').hidden = false;
         HordeCore.doAction('search',
             params,
             { 'callback': this.searchCallback.bind(this) }
@@ -1361,7 +1416,7 @@ HermesCore = {
      */
     searchCallback: function(r)
     {
-        $('hermesLoadingSearch').hide();
+        document.getElementById('hermesLoadingSearch').hidden = true;
         this.searchSlices = r;
         this.buildSearchResultsTable();
     },
@@ -1375,7 +1430,7 @@ HermesCore = {
      */
     editSliceCallback: function(sid, r)
     {
-        $('hermesLoadingTime').hide();
+        document.getElementById('hermesLoadingTime').hidden = true;
 
         if (Hermes.conf.user != r.e && this.getSliceFromCache(sid)) {
             this.removeSliceFromCache(sid);
@@ -1386,9 +1441,9 @@ HermesCore = {
             this.reverseSort = false;
             this.replaceSliceInUI(sid, r, this.view);
         }
-        $('hermesTimeForm').reset();
-        $('hermesTimeFormId').value = null;
-        $('hermesTimeSaveAsNew').hide();
+        document.getElementById('hermesTimeForm').reset();
+        document.getElementById('hermesTimeFormId').value = null;
+        document.getElementById('hermesTimeSaveAsNew').hidden = true;
 
         if (this.fromSearch) {
             this.fromSearch = false;
@@ -1406,11 +1461,11 @@ HermesCore = {
     {
         HordeCore.doAction('addTimer',
             {
-                desc: $F('hermesTimerTitle'),
-                client_id: $F('hermesTimerClient'),
-                deliverable_id: $F('hermesTimerCostObject'),
-                jobtype_id: $F('hermesTimerJobtype'),
-                exclusive: $F('hermesTimerExclusive')
+                desc: document.getElementById('hermesTimerTitle').value,
+                client_id: document.getElementById('hermesTimerClient').value,
+                deliverable_id: document.getElementById('hermesTimerCostObject').value,
+                jobtype_id: document.getElementById('hermesTimerJobtype').value,
+                exclusive: document.getElementById('hermesTimerExclusive').value
             },
             { callback: this.newTimerCallback.bind(this) }
         );
@@ -1425,11 +1480,11 @@ HermesCore = {
     newTimerCallback: function(r)
     {
         if (!r.id) {
-            $('hermesTimerDialog').fade({ duration: this.effectDur });
+            HordeFx.fadeOut(document.getElementById('hermesTimerDialog'), this.effectDur);
             this.inTimerForm = false;
         } else {
             r.elapsed = 0;
-            this.insertTimer(r, $F('hermesTimerTitle'));
+            this.insertTimer(r, document.getElementById('hermesTimerTitle').value);
         }
     },
 
@@ -1441,34 +1496,46 @@ HermesCore = {
      */
     insertTimer: function(r, d)
     {
-        var title = new Element('div', { 'class': 'timer-title' }).update(d + ' (' + r.elapsed + ' ' + Hermes.text['hours'] + ')'),
-            controls = new Element('span', { 'class': 'timerControls' }),
-            stop = new Element('span', { 'class': 'timerControls timer-saveable' }),
-            timer = new Element('div', { 'class': 'horde-resource-none' }).store('tid', r.id).store('tx', r.exclusive),
-            client_text = this.getClientNameFromId(r.client_id),
-            wrapper, wrapperClass, details;
+        var title = document.createElement('div');
+        title.className = 'timer-title';
+        title.innerHTML = d + ' (' + r.elapsed + ' ' + Hermes.text['hours'] + ')';
+        var controls = document.createElement('span');
+        controls.className = 'timerControls';
+        var stop = document.createElement('span');
+        stop.className = 'timerControls timer-saveable';
+        var timer = document.createElement('div');
+        timer.className = 'horde-resource-none';
+        timer.dataset.tid = r.id;
+        timer.dataset.tx = r.exclusive;
+        var client_text = this.getClientNameFromId(r.client_id),
+            wrapper, wrapperClass;
 
-
-        details = new Element('span', { 'class': 'hermesTimerDetails' }).update(
-                (client_text ? client_text + '/' : '') + (r.deliverable_text ? r.deliverable_text : ''));
+        var details = document.createElement('span');
+        details.className = 'hermesTimerDetails';
+        details.innerHTML = (client_text ? client_text + '/' : '') + (r.deliverable_text ? r.deliverable_text : '');
         if (r.paused) {
-            controls.addClassName('timer-paused');
+            controls.classList.add('timer-paused');
             wrapperClass = 'inactive-timer';
         } else {
-            controls.addClassName('timer-running');
+            controls.classList.add('timer-running');
             wrapperClass = 'active-timer';
         }
         if (r.exclusive) {
             wrapperClass += ' hermesTimerExclusive';
         }
-        wrapper = new Element('div', { 'class': wrapperClass }).insert(
-            timer.insert(stop).insert(controls).insert(title).insert(new Element('span').update(details)));
-        $('hermesMenuTimers').insert( { top: wrapper });
-        $('hermesTimerDialog').fade({
-            duration: this.effectDur,
-            afterFinish: function() {
-                $('hermesTimerTitle').value = '';
-            }
+        wrapper = document.createElement('div');
+        wrapper.className = wrapperClass;
+        timer.appendChild(stop);
+        timer.appendChild(controls);
+        timer.appendChild(title);
+        var detailSpan = document.createElement('span');
+        detailSpan.appendChild(details);
+        timer.appendChild(detailSpan);
+        wrapper.appendChild(timer);
+        var menuTimers = document.getElementById('hermesMenuTimers');
+        menuTimers.insertBefore(wrapper, menuTimers.firstChild);
+        HordeFx.fadeOut(document.getElementById('hermesTimerDialog'), this.effectDur, function() {
+            document.getElementById('hermesTimerTitle').value = '';
         });
         this.inTimerForm = false;
     },
@@ -1492,16 +1559,19 @@ HermesCore = {
      */
     stopTimer: function(elt)
     {
-        $('hermesLogTimerDetails').update(elt.up().down('div').clone(true));
+        document.getElementById('hermesLogTimerDetails').innerHTML = '';
+        document.getElementById('hermesLogTimerDetails').appendChild(elt.parentNode.querySelector('div').cloneNode(true));
         this.temp_timer = elt;
-        RedBox.showHtml($('hermesLogTimer').show());
+        var logTimer = document.getElementById('hermesLogTimer');
+        logTimer.hidden = false;
+        RedBox.showHtml(logTimer);
     },
 
     doStopTimer:function(elt, restart)
     {
         HordeCore.doAction('stopTimer',
-             { t: elt.up().retrieve('tid'), restart: restart },
-             { callback: this.stopTimerCallback.curry(elt, restart).bind(this) }
+             { t: elt.parentNode.dataset.tid, restart: restart },
+             { callback: this.stopTimerCallback.bind(this, elt, restart) }
         );
     },
 
@@ -1513,8 +1583,8 @@ HermesCore = {
     pauseTimer: function(elt)
     {
         HordeCore.doAction('pauseTimer',
-            { t: elt.up().retrieve('tid') },
-            { callback: this.pauseTimerCallback.curry(elt).bind(this) }
+            { t: elt.parentNode.dataset.tid },
+            { callback: this.pauseTimerCallback.bind(this, elt) }
         );
     },
 
@@ -1526,8 +1596,8 @@ HermesCore = {
     playTimer: function(elt)
     {
         HordeCore.doAction('startTimer',
-            { t: elt.up().retrieve('tid') },
-            { callback: this.playTimerCallback.curry(elt).bind(this) }
+            { t: elt.parentNode.dataset.tid },
+            { callback: this.playTimerCallback.bind(this, elt) }
         );
     },
 
@@ -1542,22 +1612,30 @@ HermesCore = {
     stopTimerCallback: function(elt, restart, r)
     {
         if (r) {
-            $('hermesTimeFormHours').setValue(r.h);
-            $('hermesTimeFormNotes').setValue(r.n);
-            $('hermesTimeFormStartDate').setValue(new Date().toString(Hermes.conf.date_format));
+            document.getElementById('hermesTimeFormHours').value = r.h;
+            document.getElementById('hermesTimeFormNotes').value = r.n;
+            document.getElementById('hermesTimeFormStartDate').value = new Date().toString(Hermes.conf.date_format);
             if (r.client_id) {
-                $('hermesTimeFormClient').setValue(r.client_id).disable();
+                var clientEl = document.getElementById('hermesTimeFormClient');
+                clientEl.value = r.client_id;
+                clientEl.disabled = true;
             }
             if (r.jobtype_id) {
-                $('hermesTimeFormJobtype').setValue(r.jobtype_id).disable();
+                var jobtypeEl = document.getElementById('hermesTimeFormJobtype');
+                jobtypeEl.value = r.jobtype_id;
+                jobtypeEl.disabled = true;
             }
             if (r.deliverable_id) {
-                $('hermesTimeFormCostobject').insert(new Element('option', { selected: 'selected', value: r.deliverable_id }).update(r.deliverable_text)).disable();
+                var costEl = document.getElementById('hermesTimeFormCostobject');
+                var opt = document.createElement('option');
+                opt.selected = true;
+                opt.value = r.deliverable_id;
+                opt.textContent = r.deliverable_text;
+                costEl.appendChild(opt);
+                costEl.disabled = true;
             }
         }
-        elt.up().up().fade({
-            duration: this.effectDur,
-        });
+        HordeFx.fadeOut(elt.parentNode.parentNode, this.effectDur);
         if (restart) {
             this.insertTimer(r, r.name);
         }
@@ -1571,9 +1649,10 @@ HermesCore = {
      */
     pauseTimerCallback: function(elt)
     {
-        elt.removeClassName('timer-running');
-        elt.addClassName('timer-paused');
-        elt.up().up().addClassName('inactive-timer').removeClassName('active-timer');
+        elt.classList.remove('timer-running');
+        elt.classList.add('timer-paused');
+        elt.parentNode.parentNode.classList.add('inactive-timer');
+        elt.parentNode.parentNode.classList.remove('active-timer');
     },
 
     /**
@@ -1584,14 +1663,15 @@ HermesCore = {
      */
     playTimerCallback: function(elt, r)
     {
-        if (elt.up().retrieve('tx')) {
-            $('hermesMenuTimers').update();
+        if (elt.parentNode.dataset.tx) {
+            document.getElementById('hermesMenuTimers').innerHTML = '';
             this.listTimersCallback(r);
         }
 
-        elt.removeClassName('timer-paused');
-        elt.addClassName('timer-running');
-        elt.up().up().addClassName('active-timer').removeClassName('inactive-timer');
+        elt.classList.remove('timer-paused');
+        elt.classList.add('timer-running');
+        elt.parentNode.parentNode.classList.add('active-timer');
+        elt.parentNode.parentNode.classList.remove('inactive-timer');
     },
 
     /**
@@ -1604,20 +1684,20 @@ HermesCore = {
         elt;
 
         if (this.view == 'time') {
-            $('hermesLoadingTime').show();
-            elt = $('hermesTimeListInternal');
+            document.getElementById('hermesLoadingTime').hidden = false;
+            elt = document.getElementById('hermesTimeListInternal');
         } else if (this.view == 'search') {
-            $('hermesLoadingSearch').show();
-            elt = $('hermesSearchListInternal');
+            document.getElementById('hermesLoadingSearch').hidden = false;
+            elt = document.getElementById('hermesSearchListInternal');
         }
 
-        elt.select('.hermesSelectedSlice').each(function(s) {
-            sliceIds.push(s.up().retrieve('sid'));
-            slices.push(s.up());
+        elt.querySelectorAll('.hermesSelectedSlice').forEach(function(s) {
+            sliceIds.push(s.parentNode.dataset.sid);
+            slices.push(s.parentNode);
         }.bind(this));
         HordeCore.doAction('submitSlices',
             { items: sliceIds.join(':') },
-            { callback: this.submitSlicesCallback.curry(slices).bind(this) }
+            { callback: this.submitSlicesCallback.bind(this, slices) }
         );
     },
 
@@ -1631,15 +1711,15 @@ HermesCore = {
     submitSlicesCallback: function(slices)
     {
         if (this.view == 'time') {
-            $('hermesLoadingTime').hide();
-            slices.each(function(i) { this.removeSliceFromUI(i); }.bind(this));
+            document.getElementById('hermesLoadingTime').hidden = true;
+            slices.forEach(function(i) { this.removeSliceFromUI(i); }.bind(this));
         } else if (this.view == 'search') {
-            $('hermesLoadingSearch').hide();
-            $('hermesSearchListInternal').select('.hermesSelectedSlice').each(function(s) {
-                s.removeClassName('hermesSelectedSlice')
-                    .removeClassName('hermesTimeListSelect')
-                    .addClassName('hermesTimeListUnselectable');
-            }.bind(this));
+            document.getElementById('hermesLoadingSearch').hidden = true;
+            document.getElementById('hermesSearchListInternal').querySelectorAll('.hermesSelectedSlice').forEach(function(s) {
+                s.classList.remove('hermesSelectedSlice');
+                s.classList.remove('hermesTimeListSelect');
+                s.classList.add('hermesTimeListUnselectable');
+            });
 
         }
         this.checkSelected();
@@ -1654,26 +1734,28 @@ HermesCore = {
     {
         switch (view) {
         case 'time':
-            $('hermesTimeListInternal').childElements().each(function(row) {
-                row.purge();
-                row.remove();
-            });
-            if ($('hermesTimeListHeader')) {
-                $('hermesTimeListHeader').select('div').each(function(d) {
-                   d.removeClassName('sortup');
-                   d.removeClassName('sortdown');
+            var timeList = document.getElementById('hermesTimeListInternal');
+            while (timeList.lastChild) {
+                timeList.lastChild.remove();
+            }
+            var timeHeader = document.getElementById('hermesTimeListHeader');
+            if (timeHeader) {
+                timeHeader.querySelectorAll('div').forEach(function(d) {
+                   d.classList.remove('sortup');
+                   d.classList.remove('sortdown');
                 });
             }
             break;
         case 'search':
-            $('hermesSearchListInternal').childElements().each(function(row) {
-                row.purge();
-                row.remove();
-            });
-            if ($('hermesSearchListHeader')) {
-                $('hermesSearchListHeader').select('div').each(function(d) {
-                   d.removeClassName('sortup');
-                   d.removeClassName('sortdown');
+            var searchList = document.getElementById('hermesSearchListInternal');
+            while (searchList.lastChild) {
+                searchList.lastChild.remove();
+            }
+            var searchHeader = document.getElementById('hermesSearchListHeader');
+            if (searchHeader) {
+                searchHeader.querySelectorAll('div').forEach(function(d) {
+                   d.classList.remove('sortup');
+                   d.classList.remove('sortdown');
                 });
             }
         }
@@ -1684,7 +1766,7 @@ HermesCore = {
      */
     loadSlices: function(id)
     {
-        $('hermesLoadingTime').show();
+        document.getElementById('hermesLoadingTime').hidden = false;
         this.slices = [];
         HordeCore.doAction('loadSlices',
             { e: Hermes.conf.user, 's': false },
@@ -1697,7 +1779,7 @@ HermesCore = {
      */
     loadSlicesCallback: function(id, r)
     {
-        $('hermesLoadingTime').hide();
+        document.getElementById('hermesLoadingTime').hidden = true;
         this.slices = r;
         this.buildSliceTable();
         if (id) {
@@ -1710,13 +1792,15 @@ HermesCore = {
      */
     loadJobListCallback: function(r)
     {
-        var t = $('hermesJobTypeListInternal');
+        var t = document.getElementById('hermesJobTypeListInternal');
         if (!t) {
             return;
         }
-        t.update();
-        r.each(function(jt) {
-            t.insert(this.buildJobTypeRow(jt).toggle());
+        t.innerHTML = '';
+        r.forEach(function(jt) {
+            var row = this.buildJobTypeRow(jt);
+            row.hidden = !row.hidden;
+            t.appendChild(row);
         }.bind(this));
     },
 
@@ -1727,14 +1811,18 @@ HermesCore = {
     {
         var row, cell, d;
 
-        row = $('hermesJobTypeListTemplate').clone(true);
-        row.addClassName('hermesJobListRow');
+        row = document.getElementById('hermesJobTypeListTemplate').cloneNode(true);
+        row.classList.add('hermesJobListRow');
         row.removeAttribute('id');
-        row.store('jid', jt.id);
-        cell = row.down().update(jt.name);
-        cell = cell.next().update((jt.billable == 1) ? 'Y' : 'N');
-        cell = cell.next().update((jt.enabled == 1) ? 'Y' : 'N');
-        cell = cell.next().update(jt.rate);
+        row.dataset.jid = jt.id;
+        cell = row.firstElementChild;
+        cell.innerHTML = jt.name;
+        cell = cell.nextElementSibling;
+        cell.innerHTML = (jt.billable == 1) ? 'Y' : 'N';
+        cell = cell.nextElementSibling;
+        cell.innerHTML = (jt.enabled == 1) ? 'Y' : 'N';
+        cell = cell.nextElementSibling;
+        cell.innerHTML = jt.rate;
 
         return row;
     },
@@ -1746,7 +1834,7 @@ HermesCore = {
     {
         var total = 0, totalb = 0, today = 0, todayb = 0;
 
-        this.slices.each(function(i) {
+        this.slices.forEach(function(i) {
             var h = parseFloat(i.h);
             total = total + h;
             if (i.b == 1) { totalb = totalb + h }
@@ -1756,10 +1844,10 @@ HermesCore = {
             }
         }.bind(this));
 
-        $('hermesSummaryTodayBillable').down().update(todayb.toFixed(2));
-        $('hermesSummaryTodayNonBillable').down().update((today - todayb).toFixed(2));
-        $('hermesSummaryTotalBillable').down().update(totalb.toFixed(2));
-        $('hermesSummaryTotalNonBillable').down().update((total - totalb).toFixed(2));
+        document.getElementById('hermesSummaryTodayBillable').firstElementChild.innerHTML = todayb.toFixed(2);
+        document.getElementById('hermesSummaryTodayNonBillable').firstElementChild.innerHTML = (today - todayb).toFixed(2);
+        document.getElementById('hermesSummaryTotalBillable').firstElementChild.innerHTML = totalb.toFixed(2);
+        document.getElementById('hermesSummaryTotalNonBillable').firstElementChild.innerHTML = (total - totalb).toFixed(2);
     },
 
     /**
@@ -1767,7 +1855,7 @@ HermesCore = {
      */
     buildSliceTable: function()
     {
-        var t = $('hermesTimeListInternal'),
+        var t = document.getElementById('hermesTimeListInternal'),
             slices;
 
         if (this.reverseSort) {
@@ -1806,14 +1894,19 @@ HermesCore = {
             }
         }
         this.slices = slices;
-        t.hide();
-        slices.each(function(slice) {
-            t.insert(this.buildSliceRow(slice).toggle());
+        t.hidden = true;
+        slices.forEach(function(slice) {
+            var row = this.buildSliceRow(slice);
+            row.hidden = !row.hidden;
+            t.appendChild(row);
         }.bind(this));
-        $(this.sortbyfield).up('div').addClassName('sort' + this.sortDir);
-        t.appear({ duration: this.effectDur, queue: 'end' });
+        var sortEl = document.getElementById(this.sortbyfield);
+        if (sortEl) {
+            sortEl.parentNode.classList.add('sort' + this.sortDir);
+        }
+        HordeFx.fadeIn(t, this.effectDur);
         this.updateTimeSummary();
-        $$('input').each(QuickFinder.attachBehavior.bind(QuickFinder));
+        document.querySelectorAll('input').forEach(QuickFinder.attachBehavior.bind(QuickFinder));
     },
 
     /**
@@ -1821,10 +1914,10 @@ HermesCore = {
      */
     buildSearchResultsTable: function()
     {
-        var t = $('hermesSearchListInternal'),
+        var t = document.getElementById('hermesSearchListInternal'),
             slices, total = 0;
 
-        t.update();
+        t.innerHTML = '';
         if (this.searchReverseSort) {
             slices = this.searchSlices.reverse();
             this.searchSortDir = (this.searchSortDir == 'up') ? 'down' : 'up';
@@ -1861,16 +1954,21 @@ HermesCore = {
             }
         }
         this.searchSlices = slices;
-        t.hide();
-        slices.each(function(slice) {
-            t.insert(this.buildSearchRow(slice).toggle());
+        t.hidden = true;
+        slices.forEach(function(slice) {
+            var row = this.buildSearchRow(slice);
+            row.hidden = !row.hidden;
+            t.appendChild(row);
             total = total + parseFloat(slice.h);
         }.bind(this));
-        $(this.searchSortbyfield).up('div').addClassName('sort' + this.searchSortDir);
-        t.appear({ duration: this.effectDur, queue: 'end' });
+        var sortEl = document.getElementById(this.searchSortbyfield);
+        if (sortEl) {
+            sortEl.parentNode.classList.add('sort' + this.searchSortDir);
+        }
+        HordeFx.fadeIn(t, this.effectDur);
         this.updateTimeSummary();
-        $('hermesSearchSum').update(total);
-        $$('input').each(QuickFinder.attachBehavior.bind(QuickFinder));
+        document.getElementById('hermesSearchSum').innerHTML = total;
+        document.querySelectorAll('input').forEach(QuickFinder.attachBehavior.bind(QuickFinder));
     },
 
     /**
@@ -1880,10 +1978,10 @@ HermesCore = {
     updateSearchTotal: function()
     {
         var total = 0;
-        this.searchSlices.each(function(slice) {
+        this.searchSlices.forEach(function(slice) {
             total = total + parseFloat(slice.h);
         });
-        $('hermesSearchSum').update(total);
+        document.getElementById('hermesSearchSum').innerHTML = total;
     },
 
     /**
@@ -1898,23 +1996,32 @@ HermesCore = {
     {
         var row, cell, d;
 
-        row = $('hermesTimeListTemplate').clone(true);
-        row.addClassName('hermesTimeListRow');
+        row = document.getElementById('hermesTimeListTemplate').cloneNode(true);
+        row.classList.add('hermesTimeListRow');
         row.removeAttribute('id');
-        row.store('sid', slice.i);
+        row.dataset.sid = slice.i;
         d = this.parseDate(slice.d);
-        cell = row.down().update(' ');
-        cell = cell.next().update(d.toString(Hermes.conf.date_format));
+        cell = row.firstElementChild;
+        cell.innerHTML = ' ';
+        cell = cell.nextElementSibling;
+        cell.innerHTML = d.toString(Hermes.conf.date_format);
         if (!slice.cn || slice.cn[Hermes.conf.client_name_field].length == 0) {
-            cell = cell.next().update(' ');
+            cell = cell.nextElementSibling;
+            cell.innerHTML = ' ';
         } else {
-            cell = cell.next().update(slice.cn[Hermes.conf.client_name_field]);
+            cell = cell.nextElementSibling;
+            cell.innerHTML = slice.cn[Hermes.conf.client_name_field];
         }
-        cell = cell.next().update((slice.con) ? slice.con : ' ');
-        cell = cell.next().update((slice.tn) ? slice.tn : ' ');
-        cell = cell.next().update((slice.desc) ? slice.desc : ' ');
-        cell = cell.next().update((slice.b == 1) ? 'Y' : 'N');
-        cell = cell.next().update(slice.h);
+        cell = cell.nextElementSibling;
+        cell.innerHTML = (slice.con) ? slice.con : ' ';
+        cell = cell.nextElementSibling;
+        cell.innerHTML = (slice.tn) ? slice.tn : ' ';
+        cell = cell.nextElementSibling;
+        cell.innerHTML = (slice.desc) ? slice.desc : ' ';
+        cell = cell.nextElementSibling;
+        cell.innerHTML = (slice.b == 1) ? 'Y' : 'N';
+        cell = cell.nextElementSibling;
+        cell.innerHTML = slice.h;
 
         return row;
     },
@@ -1931,31 +2038,46 @@ HermesCore = {
     {
         var row, cell, d;
 
-        row = $('hermesSearchListTemplate').clone(true);
-        row.addClassName('hermesTimeListRow');
+        row = document.getElementById('hermesSearchListTemplate').cloneNode(true);
+        row.classList.add('hermesTimeListRow');
         row.removeAttribute('id');
-        row.store('sid', slice.i);
+        row.dataset.sid = slice.i;
         if (!slice.x) {
-            row.down().removeClassName('hermesUnselectedSlice')
-                .removeClassName('hermesTimeListSelect')
-                .addClassName('hermesTimeListUnselectable')
-                .next().next().next().next().next().next().next().next().next()
-                .update();
+            var first = row.firstElementChild;
+            first.classList.remove('hermesUnselectedSlice');
+            first.classList.remove('hermesTimeListSelect');
+            first.classList.add('hermesTimeListUnselectable');
+            // Navigate to the 10th cell (skip 9 siblings)
+            var lastCell = first;
+            for (var n = 0; n < 9; n++) {
+                lastCell = lastCell.nextElementSibling;
+            }
+            lastCell.innerHTML = '';
         }
         d = this.parseDate(slice.d);
-        cell = row.down().update(' ');
-        cell = cell.next().update(d.toString(Hermes.conf.date_format));
-        cell = cell.next().update(slice.e);
+        cell = row.firstElementChild;
+        cell.innerHTML = ' ';
+        cell = cell.nextElementSibling;
+        cell.innerHTML = d.toString(Hermes.conf.date_format);
+        cell = cell.nextElementSibling;
+        cell.innerHTML = slice.e;
         if (!slice.cn) {
-            cell = cell.next().update(' ');
+            cell = cell.nextElementSibling;
+            cell.innerHTML = ' ';
         } else {
-            cell = cell.next().update(slice.cn[Hermes.conf.client_name_field]);
+            cell = cell.nextElementSibling;
+            cell.innerHTML = slice.cn[Hermes.conf.client_name_field];
         }
-        cell = cell.next().update((slice.con) ? slice.con : ' ');
-        cell = cell.next().update((slice.tn) ? slice.tn : ' ');
-        cell = cell.next().update((slice.desc) ? slice.desc : ' ');
-        cell = cell.next().update((slice.b == 1) ? 'Y' : 'N');
-        cell = cell.next().update(slice.h);
+        cell = cell.nextElementSibling;
+        cell.innerHTML = (slice.con) ? slice.con : ' ';
+        cell = cell.nextElementSibling;
+        cell.innerHTML = (slice.tn) ? slice.tn : ' ';
+        cell = cell.nextElementSibling;
+        cell.innerHTML = (slice.desc) ? slice.desc : ' ';
+        cell = cell.nextElementSibling;
+        cell.innerHTML = (slice.b == 1) ? 'Y' : 'N';
+        cell = cell.nextElementSibling;
+        cell.innerHTML = slice.h;
 
         return row;
     },
@@ -1965,12 +2087,12 @@ HermesCore = {
      */
     handleEntrySort: function(e)
     {
-        if (this.sortbyfield == e.identify()) {
+        if (this.sortbyfield == e.id) {
             this.reverseSort = true;
         } else {
             this.reverseSort = false;
         }
-        this.sortbyfield = e.identify();
+        this.sortbyfield = e.id;
         this.updateView(this.view);
         this.buildSliceTable();
     },
@@ -1980,12 +2102,12 @@ HermesCore = {
      */
     handleSearchSort: function(e)
     {
-        if (this.searchSortbyfield == e.identify()) {
+        if (this.searchSortbyfield == e.id) {
             this.searchReverseSort = true;
         } else {
             this.searchReverseSort = false;
         }
-        this.searchSortbyfield = e.identify();
+        this.searchSortbyfield = e.id;
         this.updateView(this.view);
         this.buildSearchResultsTable();
     },
@@ -1995,17 +2117,15 @@ HermesCore = {
      */
     closeView: function(loc)
     {
-        $w('Time Search Adminjobs Admindeliverables').each(function(a) {
-            a = $('hermesNav' + a);
-            if (a) {
-                a.removeClassName('horde-subnavi-active');
+        ['Time', 'Search', 'Adminjobs', 'Admindeliverables'].forEach(function(a) {
+            var el = document.getElementById('hermesNav' + a);
+            if (el) {
+                el.classList.remove('horde-subnavi-active');
             }
         });
         if (this.view && this.view != loc) {
-            $('hermesView' + this.view.capitalize()).fade({
-                duration: this.effectDur,
-                queue: 'end'
-            });
+            var viewCap = this.view.charAt(0).toUpperCase() + this.view.slice(1);
+            HordeFx.fadeOut(document.getElementById('hermesView' + viewCap), this.effectDur);
             this.view = null;
         }
     },
@@ -2079,7 +2199,8 @@ HermesCore = {
         }
         var content = RedBox.getWindowContents();
         if (content) {
-            document.body.insert(content.hide());
+            content.hidden = true;
+            document.body.appendChild(content);
         }
         RedBox.close();
     },
@@ -2133,9 +2254,9 @@ HermesCore = {
         if (r) {
             for (var i = 0; i < r.length; i++) {
                 var t = r[i];
-                $('hermesMenuTimers').select('.horde-resource-none').each(function(elt) {
-                    if (elt.retrieve('tid') == t['id']) {
-                        elt.down('div').update(t.name + ' (' + t.elapsed + Hermes.text['hours'] + ')');
+                document.getElementById('hermesMenuTimers').querySelectorAll('.horde-resource-none').forEach(function(elt) {
+                    if (elt.dataset.tid == t['id']) {
+                        elt.querySelector('div').innerHTML = t.name + ' (' + t.elapsed + Hermes.text['hours'] + ')';
                     }
                 });
             }
@@ -2148,15 +2269,15 @@ HermesCore = {
      */
     checkDate: function(e)
     {
-        var elm = e.element();
-        if ($F(elm)) {
-            var date = Date.parseExact($F(elm), Hermes.conf.date_format) || Date.parse($F(elm));
+        var elm = e.target;
+        if (elm.value) {
+            var date = Date.parseExact(elm.value, Hermes.conf.date_format) || Date.parse(elm.value);
             if (date) {
-                elm.setValue(date.toString(Hermes.conf.date_format));
-                this.wrongFormat.unset(elm.id);
+                elm.value = date.toString(Hermes.conf.date_format);
+                delete this.wrongFormat[elm.id];
             } else {
-                HordeCore.notify(Hermes.text.wrong_date_format.interpolate({ wrong: $F(elm), right: new Date().toString(Hermes.conf.date_format) }), 'horde.warning');
-                this.wrongFormat.set(elm.id, true);
+                HordeCore.notify(Hermes.text.wrong_date_format.interpolate({ wrong: elm.value, right: new Date().toString(Hermes.conf.date_format) }), 'horde.warning');
+                this.wrongFormat[elm.id] = true;
             }
         }
     },
@@ -2168,12 +2289,13 @@ HermesCore = {
     getClientNameFromId: function(id)
     {
         var result;
-        $$('select#hermesTimeFormClient option').each(function(o) {
-            if (o.value == id) {
-                result = o.text;
-                throw $break;
+        var options = document.querySelectorAll('select#hermesTimeFormClient option');
+        for (var i = 0; i < options.length; i++) {
+            if (options[i].value == id) {
+                result = options[i].text;
+                break;
             }
-        });
+        }
 
         return result;
     },
@@ -2182,15 +2304,15 @@ HermesCore = {
     onDomLoad: function()
     {
         // General click handler.
-        document.observe('click', HermesCore.clickHandler.bindAsEventListener(HermesCore));
+        document.addEventListener('click', HermesCore.clickHandler.bind(HermesCore));
 
         // Change handler for loading cost objects per client.
-        $('hermesTimeFormClient').observe('change', HermesCore.clientChangeHandler.bindAsEventListener(HermesCore));
-        $('hermesSearchFormClient').observe('change', HermesCore.clientChangeHandler.bindAsEventListener(HermesCore));
-        $('hermesTimerClient').observe('change', HermesCore.clientChangeHandler.bindAsEventListener(HermesCore));
+        document.getElementById('hermesTimeFormClient').addEventListener('change', HermesCore.clientChangeHandler.bind(HermesCore));
+        document.getElementById('hermesSearchFormClient').addEventListener('change', HermesCore.clientChangeHandler.bind(HermesCore));
+        document.getElementById('hermesTimerClient').addEventListener('change', HermesCore.clientChangeHandler.bind(HermesCore));
 
         // Validate the date format.
-        $('hermesTimeFormStartDate').observe('blur', this.checkDate.bind(this));
+        document.getElementById('hermesTimeFormStartDate').addEventListener('blur', this.checkDate.bind(this));
 
         RedBox.onDisplay = function() {
             this.redBoxLoading = false;
@@ -2200,14 +2322,14 @@ HermesCore = {
         this.today = new Date().toString('yyyyMMdd');
 
         // Default the date field to today
-        $('hermesTimeFormStartDate').setValue(new Date().toString(Hermes.conf.date_format));
+        document.getElementById('hermesTimeFormStartDate').value = new Date().toString(Hermes.conf.date_format);
 
         // Initialize the starting page.
         var tmp = location.hash;
-        if (!tmp.empty() && tmp.startsWith('#')) {
+        if (tmp.length > 0 && tmp.startsWith('#')) {
             tmp = (tmp.length == 1) ? '' : tmp.substring(1);
         }
-        if (!tmp.empty()) {
+        if (tmp.length > 0) {
             this.go(decodeURIComponent(tmp));
             locParts = tmp.split(':');
             if (locParts.shift() != 'time') {
@@ -2218,16 +2340,16 @@ HermesCore = {
             this.go(Hermes.conf.login_view);
         }
 
-        document.observe('Growler:toggled', function(e) {
-            var button = $('hermesNotifications');
-            if (e.memo.visible) {
+        document.addEventListener('Growler:toggled', function(e) {
+            var button = document.getElementById('hermesNotifications');
+            if (e.detail.visible) {
                 button.title = Hermes.text.hidelog;
-                button.addClassName('hermesClose');
+                button.classList.add('hermesClose');
             } else {
                 button.title = Hermes.text.alerts;
-                button.removeClassName('hermesClose');
+                button.classList.remove('hermesClose');
             }
-        }.bindAsEventListener(this));
+        }.bind(this));
 
         // List active timers
         HordeCore.doAction('listTimers', [], { callback: this.listTimersCallback.bind(this) });
@@ -2249,17 +2371,20 @@ HermesCore = {
         );
 
         // Setup the deliverables
-        if ($('hermesDeliverablesClientSelect')) {
-            $('hermesDeliverablesClientSelect').observe('change', HermesCore.deliverablesClientChangeHandler.bindAsEventListener(HermesCore));
+        var delClientSelect = document.getElementById('hermesDeliverablesClientSelect');
+        if (delClientSelect) {
+            delClientSelect.addEventListener('change', HermesCore.deliverablesClientChangeHandler.bind(HermesCore));
             HordeCore.doAction('listDeliverables',
                 { },
                 { callback: this.listDeliverablesAdminCallback.bind(this) }
             );
         }
 
-        new PeriodicalExecuter(HordeCore.doAction.bind(HordeCore, 'poll', {}, { 'callback': this.pollCallback.bind(this) }), 60);
+        setInterval(function() {
+            HordeCore.doAction('poll', {}, { 'callback': this.pollCallback.bind(this) });
+        }.bind(this), 60000);
     }
 };
-document.observe('dom:loaded', HermesCore.onDomLoad.bind(HermesCore));
-document.observe('Horde_Calendar:select', HermesCore.datePickerHandler.bindAsEventListener(HermesCore));
-HordeCore.onException = HordeCore.onException.wrap(HermesCore.onException.bind(HermesCore));
+document.addEventListener('DOMContentLoaded', HermesCore.onDomLoad.bind(HermesCore));
+document.addEventListener('Horde_Calendar:select', HermesCore.datePickerHandler.bind(HermesCore));
+HordeCore.onException = HordeCore.onException.wrap(HermesCore.onException.bind(HermesCore)); // eslint-disable-line horde/no-prototype-methods -- .wrap() is from HordeCore (Wave 10)
