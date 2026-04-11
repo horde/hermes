@@ -2387,4 +2387,11 @@ HermesCore = {
 };
 document.addEventListener('DOMContentLoaded', HermesCore.onDomLoad.bind(HermesCore));
 document.addEventListener('Horde_Calendar:select', HermesCore.datePickerHandler.bind(HermesCore));
-HordeCore.onException = HordeCore.onException.wrap(HermesCore.onException.bind(HermesCore)); // eslint-disable-line horde/no-prototype-methods -- .wrap() is from HordeCore (Wave 10)
+if (typeof HordeCore.onException.wrap === 'function') {
+    HordeCore.onException = HordeCore.onException.wrap(HermesCore.onException.bind(HermesCore)); // eslint-disable-line horde/no-prototype-methods
+} else {
+    var _parentOnException = HordeCore.onException;
+    HordeCore.onException = function(r, e) {
+        HermesCore.onException(_parentOnException, r, e);
+    };
+}
