@@ -10,6 +10,10 @@
  * @author  Michael J. Rubinsky <mrubinsk@horde.org>
  * @package Hermes
  */
+
+use Horde\Injector\Attribute\Factory;
+
+#[Factory(factory: Hermes_Factory_Driver::class, method: 'create')]
 abstract class Hermes_Driver
 {
     const SORT_ORDER_ASC = 'ASC';
