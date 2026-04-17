@@ -608,7 +608,7 @@ class Hermes
         // AM/PM. Set the locale to C to workaround this, but grab the
         // locale's D_FMT before that.
         $format = Horde_Nls::getLangInfo(D_FMT);
-        $old_locale = setlocale(LC_TIME, 0);
+        $old_locale = setlocale(LC_TIME, '0');
         setlocale(LC_TIME, 'C');
 
         // Try exact format match first.
