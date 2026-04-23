@@ -46,10 +46,9 @@ class Hermes_Table extends Horde_Core_Ui_Widget
                     $params = isset($col['params']) ? $col['params'] : array();
                     // Column types which begin with % are pseudo-types handled
                     // directly.
-                    if (substr($typename, 0, 1) != '%') {
-                        $type = Horde_Form_Type::create($typename, $params);
-                        $var = new Horde_Form_Variable(
-                            $title, $col['name'], $type, false, true, '');
+                    if (substr($typename, 0, 1) !== '%') {
+                        $var = new Horde_Form::createVariable(
+                            $title, $col['name'], $typename, $params, false, true, '');
                         $this->_formVars[$secname][$col['name']] = $var;
                     }
                 }
