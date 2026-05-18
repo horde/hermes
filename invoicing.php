@@ -57,7 +57,7 @@ foreach ($hours as $hour) {
         'rate' => $hour['rate'],
         'hours' => $hour['hours'],
         'total' => $hour['rate'] * $hour['hours'],
-        'date' => strftime($df, $hour['date']),
+        'date' => \Horde\Date\Format::formatDate($hour['date'], $df, $GLOBALS['language'] ?? 'en_US'),
         'description' => $hour['description'],
         '_costobject_name' => $hour['_costobject_name'],
     );
