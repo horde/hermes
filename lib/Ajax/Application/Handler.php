@@ -448,10 +448,10 @@ class Hermes_Ajax_Application_Handler extends Horde_Core_Ajax_Application_Handle
             $results['n'] = sprintf(
                 _("Using the \"%s\" stop watch from %s %s to %s %s"),
                 $tname,
-                $started->strftime($prefs->getValue('date_format_mini')),
-                $started->strftime($prefs->getValue('time_format')),
-                $now->strftime($prefs->getValue('date_format_mini')),
-                $now->strftime($prefs->getValue('time_format'))
+                $started->format($prefs->getValue('date_format_mini'), new \Horde\Date\Formatter\IcuFormatter(), $GLOBALS['language'] ?? 'en_US'),
+                $started->format($prefs->getValue('time_format'), new \Horde\Date\Formatter\IcuFormatter(), $GLOBALS['language'] ?? 'en_US'),
+                $now->format($prefs->getValue('date_format_mini'), new \Horde\Date\Formatter\IcuFormatter(), $GLOBALS['language'] ?? 'en_US'),
+                $now->format($prefs->getValue('time_format'), new \Horde\Date\Formatter\IcuFormatter(), $GLOBALS['language'] ?? 'en_US')
             );
         } else {
             $results['n'] = '';

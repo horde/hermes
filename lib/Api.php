@@ -177,7 +177,7 @@ class Hermes_Api extends Horde_Registry_Api
                 if (!empty($subtotal_column) &&
                     $vals[$subtotal_column] != $subtotal_control) {
                     Hermes_Api::renderSubtotals($result['data'], $subtotal_hours, $subtotal_billable_hours,
-                                    $subtotal_column == 'date' ? strftime("%m/%d/%Y", $subtotal_control) :
+                                    $subtotal_column == 'date' ? \Horde\Date\Format::formatDate($subtotal_control, "%m/%d/%Y", $GLOBALS['language'] ?? 'en_US') :
                                     $subtotal_control);
                     $subtotal_hours = 0.0;
                     $subtotal_billable_hours = 0.0;
@@ -220,7 +220,7 @@ class Hermes_Api extends Horde_Registry_Api
 
             if (!empty($subtotal_column)) {
                 Hermes_Api::renderSubtotals($result['data'], $subtotal_hours, $subtotal_billable_hours,
-                                $subtotal_column == 'date' ? strftime("%m/%d/%Y", $subtotal_control) :
+                                $subtotal_column == 'date' ? \Horde\Date\Format::formatDate($subtotal_control, "%m/%d/%Y", $GLOBALS['language'] ?? 'en_US') :
                                 $subtotal_control);
             }
 
