@@ -1,4 +1,5 @@
 <?php
+use Horde\Injector\Injector;
 /**
  * Hermes_Driver:: factory
  *
@@ -19,7 +20,7 @@ class Hermes_Factory_Driver extends Horde_Core_Factory_Injector
      *
      * @return Hermes_Driver
      */
-    public function create(Horde_Injector $injector)
+    public function create(Horde_Injector|Injector $injector)
     {
         $driver = $GLOBALS['conf']['storage']['driver'];
         $signature = serialize(array($driver, $GLOBALS['conf']['storage']['params']['driverconfig']));
