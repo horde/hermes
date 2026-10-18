@@ -1,4 +1,5 @@
 <?php
+use Horde\Hermes\HermesConfig;
 use Horde\Injector\Injector;
 /**
  * Hermes_Driver:: factory
@@ -22,10 +23,11 @@ class Hermes_Factory_Driver extends Horde_Core_Factory_Injector
      */
     public function create(Horde_Injector|Injector $injector)
     {
-        $driver = $GLOBALS['conf']['storage']['driver'];
-        $signature = serialize(array($driver, $GLOBALS['conf']['storage']['params']['driverconfig']));
+        $config = $injector->get('HermesConfig');
+        $driver = $config->get('storage.driver');
+        $signature = serialize(array($driver, $config->get('storage.params.driverconfig')));
         if (empty($this->_instances[$signature])) {
-            if ($driver == 'sql' && $GLOBALS['conf']['storage']['params']['driverconfig'] == 'horde') {
+            if ($driver == 'sql' && $config->get('storage.params.driverconfig') == 'horde') {
                 $params = array('db_adapter' => $injector->getInstance('Horde_Db_Adapter'));
             } else {
                 throw new Horde_Exception('Using non-global db connection not yet supported.');

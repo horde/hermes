@@ -1,4 +1,5 @@
 <?php
+use Horde\Hermes\HermesConfig;
 /**
  * Hermes external API interface.
  *
@@ -22,6 +23,7 @@ class Hermes_Api extends Horde_Registry_Api
      */
     public static function getTableMetaData($name, $params)
     {
+        $config = $injector->get('HermesConfig');
         switch ($name) {
         case 'hours':
             $emptype = Hermes::getEmployeesType('enum');
@@ -56,7 +58,7 @@ class Hermes_Api extends Horde_Registry_Api
                       'title'  => _("Hours"),
                       'type'   => 'number',
                       'align'  => 'right'));
-            if ($GLOBALS['conf']['time']['choose_ifbillable']) {
+            if ($config->get('time.choose_ifbillable')) {
                 $columns[] =
                     array('name'   => 'billable',
                           'title'  => _("Bill?"),
@@ -70,7 +72,7 @@ class Hermes_Api extends Horde_Registry_Api
                       'title' => _("Notes"))));
 
             $colspan = 6;
-            if ($GLOBALS['conf']['time']['choose_ifbillable']) {
+            if ($config->get('time.choose_ifbillable')) {
                 $colspan++;
             }
             $fColumns = array(
@@ -81,7 +83,7 @@ class Hermes_Api extends Horde_Registry_Api
                 array('name'    => 'hours',
                       'type'    => 'number',
                       'align'   => 'right'));
-            if ($GLOBALS['conf']['time']['choose_ifbillable']) {
+            if ($config->get('time.choose_ifbillable')) {
                 $fColumns[] =
                     array('name'   => 'billable',
                           'type'   => 'enum',
@@ -298,7 +300,8 @@ class Hermes_Api extends Horde_Registry_Api
      */
     public function listCostObjects($criteria)
     {
-        if (!$GLOBALS['conf']['time']['deliverables']) {
+        $config = $injector->get('HermesConfig');
+        if (!$config->get('time.deliverables')) {
             return array();
         }
 

@@ -1,4 +1,5 @@
 <?php
+use Horde\Hermes\HermesConfig;
 /**
  * Hermes Base Class.
  *
@@ -26,6 +27,7 @@ class Hermes
      */
     public static function listClients($name = '')
     {
+        $config = $injector->get('HermesConfig');
         if (isset(self::$_clients[$name])) {
             return self::$_clients[$name];
         }
@@ -43,7 +45,7 @@ class Hermes
             $result = $result[$name];
             foreach ($result as $client) {
                 self::$_clients[$name][$client['id']] =
-                    $client[$GLOBALS['conf']['client']['field']];
+                    $client[$config->get('client.field')];
             }
         }
         uasort(self::$_clients[$name], 'strcoll');
@@ -328,6 +330,7 @@ class Hermes
      */
     public static function getCostObjectType($client_ids = null)
     {
+        $config = $injector->get('HermesConfig');
         $elts = array('' => _("--- No Cost Object ---"));
         $counter = 0;
         foreach (self::getCostObjects($client_ids) as $category) {
@@ -337,7 +340,7 @@ class Hermes
                 $name = Horde_String::truncate($object['name'], 80);
                 $hours = 0.0;
                 $filter = array('costobject' => $object['id']);
-                if (!empty($GLOBALS['conf']['time']['sum_billable_only'])) {
+                if (!empty($config->get('time.sum_billable_only'))) {
                     $filter['billable'] = true;
                 }
                 $result = $GLOBALS['injector']->getInstance('Hermes_Driver')->getHours($filter, array('hours'));
