@@ -1,4 +1,5 @@
 <?php
+use Horde\Hermes\HermesConfig;
 /**
  * Hermes application interface.
  *
@@ -200,6 +201,7 @@ class Hermes_Application extends Horde_Registry_Application
      */
     public function menu($menu)
     {
+        $config = $injector->get('HermesConfig');
         $menu->add(Horde::url('time.php'), _("My _Time"), 'hermes-time');
 
         $menu->add(
@@ -223,14 +225,14 @@ class Hermes_Application extends Horde_Registry_Application
 
         $menu->add(Horde::url('search.php'), _("_Search"), 'hermes-search');
 
-        if ($GLOBALS['conf']['time']['deliverables'] &&
+        if ($config->get('time.deliverables') &&
             $GLOBALS['registry']->isAdmin(array('permission' => 'hermes:deliverables'))) {
             $menu->add(Horde::url('deliverables.php'),
                        _("_Deliverables"),
                        'hermes-deliverables');
         }
 
-        if ($GLOBALS['conf']['invoices']['driver'] &&
+        if ($config->get('invoices.driver') &&
             $GLOBALS['registry']->isAdmin(array('permission' => 'hermes:invoicing'))) {
             $menu->add(Horde::url('invoicing.php'),
                        _("_Invoicing"),

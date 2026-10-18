@@ -47,7 +47,7 @@ class Hermes_Table extends Horde_Core_Ui_Widget
                     // Column types which begin with % are pseudo-types handled
                     // directly.
                     if (substr($typename, 0, 1) !== '%') {
-                        $var = new Horde_Form::createVariable(
+                        $var = Horde_Form::createVariable(
                             $title, $col['name'], $typename, $params, false, true, '');
                         $this->_formVars[$secname][$col['name']] = $var;
                     }
